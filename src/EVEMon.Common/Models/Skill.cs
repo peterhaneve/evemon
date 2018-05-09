@@ -75,6 +75,7 @@ namespace EVEMon.Common.Models
             SkillPoints = src.Skillpoints;
             LastConfirmedLvl = src.Level;
             m_level = src.Level;
+            m_level = Math.Min(m_level, 5);
         }
 
         /// <summary>
@@ -100,6 +101,7 @@ namespace EVEMon.Common.Models
         {
             m_known = true;
             m_level++;
+            m_level = Math.Min(m_level, 5);
             SkillPoints = StaticData.GetPointsRequiredForLevel(Math.Min(m_level, 5));
         }
 
