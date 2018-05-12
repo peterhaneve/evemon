@@ -805,6 +805,13 @@ namespace EVEMon.Common.Models
                     Name = StaticItems.GetItemName(implant)
                 });
             CurrentImplants.Import(newImplants);
+            
+            // Correction of Base attributes - these are in ESI already inclusive implants - just remove it from Base
+            m_attributes[(int)EveAttribute.Intelligence].Base = m_attributes[(int)EveAttribute.Intelligence].Base - CurrentImplants[(EveAttribute)EveAttribute.Intelligence].Bonus;
+            m_attributes[(int)EveAttribute.Perception].Base = m_attributes[(int)EveAttribute.Perception].Base - CurrentImplants[(EveAttribute)EveAttribute.Perception].Bonus;
+            m_attributes[(int)EveAttribute.Willpower].Base = m_attributes[(int)EveAttribute.Willpower].Base - CurrentImplants[(EveAttribute)EveAttribute.Willpower].Bonus;
+            m_attributes[(int)EveAttribute.Charisma].Base = m_attributes[(int)EveAttribute.Charisma].Base - CurrentImplants[(EveAttribute)EveAttribute.Charisma].Bonus;
+            m_attributes[(int)EveAttribute.Memory].Base = m_attributes[(int)EveAttribute.Memory].Base - CurrentImplants[(EveAttribute)EveAttribute.Memory].Bonus;
         }
 
         /// <summary>
