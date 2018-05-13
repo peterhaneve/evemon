@@ -694,7 +694,7 @@ namespace EVEMon.Controls
             {
                 builder.Append(job.InstalledItem.Name)
                     .Append(" at ")
-                    .Append($"{job.SolarSystem.Name} > {job.Installation}")
+                    .Append($"{job.SolarSystem?.Name ?? "Unknown"} > {job.Installation}")
                     .AppendLine();
             }
             return builder.ToString();
