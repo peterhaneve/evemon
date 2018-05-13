@@ -573,7 +573,7 @@ namespace EVEMon.CharacterMonitoring
                 .AppendLine()
                 .Append($"Activity: {job.Activity.GetDescription()}")
                 .AppendLine()
-                .Append($"Solar System: {job.SolarSystem.FullLocation}")
+                .Append($"Solar System: {job.SolarSystem?.FullLocation ?? "Unknown"}")
                 .AppendLine()
                 .Append($"Installation: {job.Installation}")
                 .AppendLine();
