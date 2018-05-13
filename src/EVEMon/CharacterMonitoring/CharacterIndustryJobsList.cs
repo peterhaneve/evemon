@@ -718,11 +718,11 @@ namespace EVEMon.CharacterMonitoring
                     item.Text = job.FullLocation;
                     break;
                 case IndustryJobColumn.Region:
-                    item.Text = job.SolarSystem.Constellation.Region.Name;
+                    item.Text = job.SolarSystem?.Constellation.Region.Name ?? "Unknown";
                     break;
                 case IndustryJobColumn.SolarSystem:
-                    item.Text = job.SolarSystem.Name;
-                    item.ForeColor = job.SolarSystem.SecurityLevelColor;
+                    item.Text = job.SolarSystem?.Name ?? "Unknown";
+                    item.ForeColor = job.SolarSystem?.SecurityLevelColor ?? Color.Red;
                     break;
                 case IndustryJobColumn.Installation:
                     item.Text = job.Installation;
@@ -829,14 +829,17 @@ namespace EVEMon.CharacterMonitoring
                                                                           x.Installation.ToUpperInvariant()
                                                                               .Contains(text, ignoreCase: true)
                                                                           ||
-                                                                          x.SolarSystem.Name.ToUpperInvariant()
+                                                                          (x.SolarSystem?.Name ?? "Unknown")
+                                                                              .ToUpperInvariant()
                                                                               .Contains(text, ignoreCase: true)
                                                                           ||
-                                                                          x.SolarSystem.Constellation.Name.ToUpperInvariant()
+                                                                          (x.SolarSystem?.Constellation.Name ?? "Unknown")
+                                                                              .ToUpperInvariant()
                                                                               .Contains(text, ignoreCase: true)
                                                                           ||
-                                                                          x.SolarSystem.Constellation.Region.Name.ToUpperInvariant
-                                                                              ().Contains(text, ignoreCase: true);
+                                                                          (x.SolarSystem?.Constellation.Region.Name ?? "Unknown")
+                                                                              .ToUpperInvariant()
+                                                                              .Contains(text, ignoreCase: true);
 
         /// <summary>
         /// Updates the time to completion.
