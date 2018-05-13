@@ -97,9 +97,25 @@ namespace EVEMon.Common.Models.Comparers
                 case IndustryJobColumn.Location:
                     return String.Compare(x.FullLocation, y.FullLocation, StringComparison.CurrentCulture);
                 case IndustryJobColumn.Region:
-                    return x.SolarSystem.Constellation.Region.CompareTo(y.SolarSystem.Constellation.Region);
+                    if (x.SolarSystem != null && y.SolarSystem != null)
+                        return x.SolarSystem.Constellation.Region.CompareTo(y.SolarSystem.Constellation.Region);
+                    if (x.SolarSystem == null)
+                    {
+                        if (y.SolarSystem == null)
+                            return 0;
+                        return -1;
+                    }
+                    return 1;
                 case IndustryJobColumn.SolarSystem:
-                    return x.SolarSystem.CompareTo(y.SolarSystem);
+                    if (x.SolarSystem != null && y.SolarSystem != null)
+                        return x.SolarSystem.CompareTo(y.SolarSystem);
+                    if (x.SolarSystem == null)
+                    {
+                        if (y.SolarSystem == null)
+                            return 0;
+                        return -1;
+                    }
+                    return 1;
                 case IndustryJobColumn.Installation:
                     return String.Compare(x.Installation, y.Installation, StringComparison.CurrentCulture);
                 case IndustryJobColumn.IssuedFor:

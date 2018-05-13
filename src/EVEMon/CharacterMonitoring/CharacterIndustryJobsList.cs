@@ -85,6 +85,7 @@ namespace EVEMon.CharacterMonitoring
             lvJobs.MouseDown += listView_MouseDown;
             lvJobs.MouseMove += listView_MouseMove;
             lvJobs.MouseLeave += listView_MouseLeave;
+            m_init = true;
         }
 
         #endregion
@@ -373,7 +374,7 @@ namespace EVEMon.CharacterMonitoring
             try
             {
                 IEnumerable<IndustryJob> jobs = m_list
-                    .Where(x => x.InstalledItem != null && x.OutputItem != null && x.SolarSystem != null)
+                    .Where(x => x.InstalledItem != null && x.OutputItem != null)
                     .Where(x => IsTextMatching(x, m_textFilter));
 
                 if (Character != null && Settings.UI.MainWindow.IndustryJobs.HideInactiveJobs)
@@ -573,7 +574,7 @@ namespace EVEMon.CharacterMonitoring
                 .AppendLine()
                 .Append($"Activity: {job.Activity.GetDescription()}")
                 .AppendLine()
-                .Append($"Solar System: {job.SolarSystem.FullLocation}")
+                .Append($"Solar System: {job.SolarSystem?.FullLocation ?? "Unknown"}")
                 .AppendLine()
                 .Append($"Installation: {job.Installation}")
                 .AppendLine();
@@ -717,11 +718,11 @@ namespace EVEMon.CharacterMonitoring
                     item.Text = job.FullLocation;
                     break;
                 case IndustryJobColumn.Region:
-                    item.Text = job.SolarSystem.Constellation.Region.Name;
+                    item.Text = job.SolarSystem?.Constellation.Region.Name ?? "Unknown";
                     break;
                 case IndustryJobColumn.SolarSystem:
-                    item.Text = job.SolarSystem.Name;
-                    item.ForeColor = job.SolarSystem.SecurityLevelColor;
+                    item.Text = job.SolarSystem?.Name ?? "Unknown";
+                    item.ForeColor = job.SolarSystem?.SecurityLevelColor ?? Color.Red;
                     break;
                 case IndustryJobColumn.Installation:
                     item.Text = job.Installation;
@@ -828,14 +829,17 @@ namespace EVEMon.CharacterMonitoring
                                                                           x.Installation.ToUpperInvariant()
                                                                               .Contains(text, ignoreCase: true)
                                                                           ||
-                                                                          x.SolarSystem.Name.ToUpperInvariant()
+                                                                          (x.SolarSystem?.Name ?? "Unknown")
+                                                                              .ToUpperInvariant()
                                                                               .Contains(text, ignoreCase: true)
                                                                           ||
-                                                                          x.SolarSystem.Constellation.Name.ToUpperInvariant()
+                                                                          (x.SolarSystem?.Constellation.Name ?? "Unknown")
+                                                                              .ToUpperInvariant()
                                                                               .Contains(text, ignoreCase: true)
                                                                           ||
-                                                                          x.SolarSystem.Constellation.Region.Name.ToUpperInvariant
-                                                                              ().Contains(text, ignoreCase: true);
+                                                                          (x.SolarSystem?.Constellation.Region.Name ?? "Unknown")
+                                                                              .ToUpperInvariant()
+                                                                              .Contains(text, ignoreCase: true);
 
         /// <summary>
         /// Updates the time to completion.

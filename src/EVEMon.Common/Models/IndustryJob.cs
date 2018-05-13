@@ -197,7 +197,7 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the job installation full celestrial path.
         /// </summary>
-        public string FullLocation => $"{SolarSystem.FullLocation} > {Installation}";
+        public string FullLocation => $"{SolarSystem?.FullLocation ?? "Unknown"} > {Installation}";
 
         /// <summary>
         /// Gets for which the job was issued.
@@ -385,10 +385,10 @@ namespace EVEMon.Common.Models
             switch ((CCPJobCompletedStatus)src.Status)
             {
                 // Active States
-                case CCPJobCompletedStatus.Installed:
+                case CCPJobCompletedStatus.Active:
                     return JobState.Active;
                 // Canceled States
-                case CCPJobCompletedStatus.Canceled:
+                case CCPJobCompletedStatus.Cancelled:
                     return JobState.Canceled;
                 // Failed States
                 case CCPJobCompletedStatus.Reverted:
