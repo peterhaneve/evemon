@@ -2,12 +2,12 @@
 {
     public enum CCPJobCompletedStatus
     {
-        Installed = 1,
+        Active = 1,
         Paused = 2,
         Ready = 3,
 
         Delivered = 101,
-        Canceled = 102,
+        Cancelled = 102,
         Reverted = 103,
     }
 }

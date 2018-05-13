@@ -385,10 +385,10 @@ namespace EVEMon.Common.Models
             switch ((CCPJobCompletedStatus)src.Status)
             {
                 // Active States
-                case CCPJobCompletedStatus.Installed:
+                case CCPJobCompletedStatus.Active:
                     return JobState.Active;
                 // Canceled States
-                case CCPJobCompletedStatus.Canceled:
+                case CCPJobCompletedStatus.Cancelled:
                     return JobState.Canceled;
                 // Failed States
                 case CCPJobCompletedStatus.Reverted:
