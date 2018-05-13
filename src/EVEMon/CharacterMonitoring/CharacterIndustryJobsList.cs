@@ -373,7 +373,7 @@ namespace EVEMon.CharacterMonitoring
             try
             {
                 IEnumerable<IndustryJob> jobs = m_list
-                    .Where(x => x.InstalledItem != null && x.OutputItem != null && x.SolarSystem != null)
+                    .Where(x => x.InstalledItem != null && x.OutputItem != null)
                     .Where(x => IsTextMatching(x, m_textFilter));
 
                 if (Character != null && Settings.UI.MainWindow.IndustryJobs.HideInactiveJobs)
