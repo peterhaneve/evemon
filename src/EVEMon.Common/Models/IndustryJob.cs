@@ -197,7 +197,7 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the job installation full celestrial path.
         /// </summary>
-        public string FullLocation => $"{SolarSystem.FullLocation} > {Installation}";
+        public string FullLocation => $"{SolarSystem?.FullLocation ?? "Unknown"} > {Installation}";
 
         /// <summary>
         /// Gets for which the job was issued.
