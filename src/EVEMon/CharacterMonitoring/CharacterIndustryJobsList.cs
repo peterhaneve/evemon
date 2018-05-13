@@ -85,6 +85,7 @@ namespace EVEMon.CharacterMonitoring
             lvJobs.MouseDown += listView_MouseDown;
             lvJobs.MouseMove += listView_MouseMove;
             lvJobs.MouseLeave += listView_MouseLeave;
+            m_init = true;
         }
 
         #endregion
