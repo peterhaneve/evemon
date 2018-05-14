@@ -47,7 +47,9 @@ namespace EVEMon.Common.Notifications
             List<QueuedSkill> skills = ((SkillCompletionNotificationEventArgs)other).Skills.ToList();
             foreach (QueuedSkill skill in skills.Where(skill => !Skills.Contains(skill)))
             {
-                Skills.Add(skill);
+                if (Skills.ToList().FindIndex(f => f.SkillName == skill.SkillName) == -1) {
+                    Skills.Add(skill);
+                }
             }
             UpdateDescription();
         }

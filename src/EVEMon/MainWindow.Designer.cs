@@ -367,7 +367,7 @@ namespace EVEMon
 			this.addAPIKeyMenu.Image = ((System.Drawing.Image)(resources.GetObject("addAPIKeyMenu.Image")));
 			this.addAPIKeyMenu.Name = "addAPIKeyMenu";
 			this.addAPIKeyMenu.Size = new System.Drawing.Size(174, 22);
-			this.addAPIKeyMenu.Text = "&Add API Key...";
+			this.addAPIKeyMenu.Text = "&Add Character...";
 			this.addAPIKeyMenu.Click += new System.EventHandler(this.addAPIKeyMenu_Click);
 			// 
 			// manageAPIKeysMenuItem
@@ -375,7 +375,7 @@ namespace EVEMon
 			this.manageAPIKeysMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("manageAPIKeysMenuItem.Image")));
 			this.manageAPIKeysMenuItem.Name = "manageAPIKeysMenuItem";
 			this.manageAPIKeysMenuItem.Size = new System.Drawing.Size(174, 22);
-			this.manageAPIKeysMenuItem.Text = "&Manage API Keys...";
+			this.manageAPIKeysMenuItem.Text = "&Manage Characters...";
 			this.manageAPIKeysMenuItem.Click += new System.EventHandler(this.manageAPIKeysMenuItem_Click);
 			// 
 			// fileManagerHideToolStripSeparator
