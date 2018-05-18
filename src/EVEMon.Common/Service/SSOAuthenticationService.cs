@@ -22,14 +22,13 @@ namespace EVEMon.Common.Service
         /// <returns>an instance of SSOAuthenticationService, or null if the settings are blank</returns>
         public static SSOAuthenticationService GetInstance()
         {
-            string id = Settings.SSOClientID, secret = Settings.SSOClientSecret;
+            string id = Settings.SSOClientID, secret = Settings.SSOClientSecret, scopes = Settings.SSOScopes;
             SSOAuthenticationService authService;
 
-            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(secret))
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(scopes))
                 authService = null;
             else
-                authService = new SSOAuthenticationService(id, secret, NetworkConstants.
-                    SSOScopes);
+                authService = new SSOAuthenticationService(id, secret, scopes);
             return authService;
         }
 

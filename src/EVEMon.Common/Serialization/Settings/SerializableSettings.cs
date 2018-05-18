@@ -42,6 +42,8 @@ namespace EVEMon.Common.Serialization.Settings
         public string SSOClientID { get; set; }
         [XmlAttribute("clientSecret")]
         public string SSOClientSecret { get; set; }
+        [XmlAttribute("scopes")]
+        public string SSOScopes { get; set; }
 
         [XmlAttribute("revision")]
         public int Revision { get; set; }

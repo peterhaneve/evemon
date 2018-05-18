@@ -38,6 +38,13 @@ namespace EVEMon.Common.Serialization.Eve
             set { CCPEndTime = value.DateTimeToTimeString(); }
         }
 
+        // When the skill queue is paused, startTime and endTime are empty in the XML document
+        // As a result, the serialization leaves the DateTime with its default value
+        [XmlIgnore]
+        public bool IsTraining
+        {
+            get { return EndTime != DateTime.MinValue; }
+        }
 
         #region ISynchronizableWithLocalClock Members
 

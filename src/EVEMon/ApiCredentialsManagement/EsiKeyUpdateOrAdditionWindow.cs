@@ -114,7 +114,7 @@ namespace EVEMon.ApiCredentialsManagement
 
             if (m_authService == null)
             {
-                MessageBox.Show(@"Please set the ESI Client ID and Client Secret in " +
+                MessageBox.Show(@"Please set the ESI Client ID, Client Secret and scopes in " +
                     "Settings > Network before adding ESI keys.", @"Client ID not set",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 Close();

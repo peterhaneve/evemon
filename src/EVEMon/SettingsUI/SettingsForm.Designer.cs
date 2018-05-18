@@ -140,6 +140,8 @@ namespace EVEMon.SettingsUI
             this.cbHighlightPlannedSkills = new System.Windows.Forms.CheckBox();
             this.networkPage = new EVEMon.Common.Controls.MultiPanel.MultiPanelPage();
             this.esiSettingsGroupBox = new System.Windows.Forms.GroupBox();
+            this.scopesTextBox = new System.Windows.Forms.TextBox();
+            this.lblScopes = new System.Windows.Forms.Label();
             this.lblClientSecret = new System.Windows.Forms.Label();
             this.lblClientID = new System.Windows.Forms.Label();
             this.esiSettingsLabel = new System.Windows.Forms.LinkLabel();
@@ -225,6 +227,7 @@ namespace EVEMon.SettingsUI
             this.portableEveClientsControl = new EVEMon.SettingsUI.PortableEveClientsControl();
             this.cloudStorageServiceControl = new EVEMon.SettingsUI.CloudStorageServiceControl();
             this.settingsFileStorageControl = new EVEMon.SettingsUI.SettingsFileStorageControl();
+            this.insertAllScopesButton = new System.Windows.Forms.Button();
             this.systemTrayIconGroupBox.SuspendLayout();
             this.bottomPanel.SuspendLayout();
             this.CharacterMonitorGroupBox.SuspendLayout();
@@ -1308,6 +1311,9 @@ namespace EVEMon.SettingsUI
             // 
             // esiSettingsGroupBox
             // 
+            this.esiSettingsGroupBox.Controls.Add(this.insertAllScopesButton);
+            this.esiSettingsGroupBox.Controls.Add(this.scopesTextBox);
+            this.esiSettingsGroupBox.Controls.Add(this.lblScopes);
             this.esiSettingsGroupBox.Controls.Add(this.lblClientSecret);
             this.esiSettingsGroupBox.Controls.Add(this.lblClientID);
             this.esiSettingsGroupBox.Controls.Add(this.esiSettingsLabel);
@@ -1315,10 +1321,26 @@ namespace EVEMon.SettingsUI
             this.esiSettingsGroupBox.Controls.Add(this.clientIDTextBox);
             this.esiSettingsGroupBox.Location = new System.Drawing.Point(3, 194);
             this.esiSettingsGroupBox.Name = "esiSettingsGroupBox";
-            this.esiSettingsGroupBox.Size = new System.Drawing.Size(409, 88);
+            this.esiSettingsGroupBox.Size = new System.Drawing.Size(409, 137);
             this.esiSettingsGroupBox.TabIndex = 1;
             this.esiSettingsGroupBox.TabStop = false;
             this.esiSettingsGroupBox.Text = "ESI Client Settings";
+            // 
+            // scopesTextBox
+            // 
+            this.scopesTextBox.Location = new System.Drawing.Point(82, 83);
+            this.scopesTextBox.Name = "scopesTextBox";
+            this.scopesTextBox.Size = new System.Drawing.Size(315, 20);
+            this.scopesTextBox.TabIndex = 9;
+            // 
+            // lblScopes
+            // 
+            this.lblScopes.AutoSize = true;
+            this.lblScopes.Location = new System.Drawing.Point(33, 86);
+            this.lblScopes.Name = "lblScopes";
+            this.lblScopes.Size = new System.Drawing.Size(43, 13);
+            this.lblScopes.TabIndex = 8;
+            this.lblScopes.Text = "Scopes";
             // 
             // lblClientSecret
             // 
@@ -1460,6 +1482,7 @@ namespace EVEMon.SettingsUI
             this.mailNotificationCheckBox.UseVisualStyleBackColor = true;
             this.mailNotificationCheckBox.CheckedChanged += new System.EventHandler(this.OnMustEnableOrDisable);
             // 
+            // emailNotificationsControl
             // notificationsPage
             // 
             this.notificationsPage.Controls.Add(this.lblNotificationsPage);
@@ -2284,6 +2307,19 @@ namespace EVEMon.SettingsUI
             this.settingsFileStorageControl.Size = new System.Drawing.Size(416, 108);
             this.settingsFileStorageControl.TabIndex = 0;
             // 
+            // insertAllScopesButton
+            // 
+            this.insertAllScopesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.insertAllScopesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.insertAllScopesButton.Location = new System.Drawing.Point(300, 109);
+            this.insertAllScopesButton.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.insertAllScopesButton.Name = "insertAllScopesButton";
+            this.insertAllScopesButton.Size = new System.Drawing.Size(97, 23);
+            this.insertAllScopesButton.TabIndex = 6;
+            this.insertAllScopesButton.Text = "Insert all scopes";
+            this.insertAllScopesButton.UseVisualStyleBackColor = true;
+            this.insertAllScopesButton.Click += new System.EventHandler(this.insertAllScopesButton_Click);
+            // 
             // SettingsForm
             // 
             this.AcceptButton = this.okButton;
@@ -2549,5 +2585,8 @@ namespace EVEMon.SettingsUI
         private System.Windows.Forms.Label lblClientSecret;
         private System.Windows.Forms.Label lblClientID;
         private System.Windows.Forms.TextBox clientSecretTextBox;
+        private System.Windows.Forms.TextBox scopesTextBox;
+        private System.Windows.Forms.Label lblScopes;
+        private System.Windows.Forms.Button insertAllScopesButton;
     }
 }

@@ -788,14 +788,48 @@ namespace EVEMon.Common.Models
         /// Imports data from the given skills information.
         /// </summary>
         /// <param name="skills">The serialized character skill information</param>
-        internal void Import(EsiAPISkills skills)
+        internal void Import(EsiAPISkills skills, EsiAPISkillQueue queue)
         {
             var newSkills = new LinkedList<SerializableCharacterSkill>();
 
             FreeSkillPoints = skills.UnallocatedSP;
+
+            // Keep track of the current skill queue's completed skills, as ESI doesn't transfer them to the skills list until you login
+            Dictionary<long, QueuedSkill> dict = new Dictionary<long, QueuedSkill>();
+            if (queue != null && IsTraining)
+            {
+                DateTime uselessDate = DateTime.UtcNow;
+
+                foreach (var serialSkill in queue.ToXMLItem().Queue)
+                {
+                    var queuedSkill = new QueuedSkill(this, serialSkill, ref uselessDate);
+                    if (!dict.ContainsKey(queuedSkill.Skill.ID))
+                        dict.Add(queuedSkill.Skill.ID, queuedSkill);
+                    else if (queuedSkill.Level > dict[queuedSkill.Skill.ID].Level)
+                        dict[queuedSkill.Skill.ID] = queuedSkill;
+                }
+            }
             // Convert skills to EVE format
             foreach (var skill in skills.Skills)
+            {
+                // Check if the skill is in the queue, and completed at a higher level or has higher current SP
+                if (dict.ContainsKey(skill.ID))
+                {
+                    var queuedSkill = dict[skill.ID];
+
+                    if (queuedSkill.IsCompleted)
+                    {
+                        skill.ActiveLevel = Math.Max(skill.ActiveLevel, queuedSkill.Level);
+                        skill.Level = Math.Max(skill.Level, queuedSkill.Level);
+                        skill.Skillpoints = Math.Max(skill.Skillpoints, queuedSkill.EndSP);
+                    }
+                    else
+                        skill.Skillpoints = Math.Max(skill.Skillpoints, queuedSkill.CurrentSP);
+                }
+
                 newSkills.AddLast(skill.ToXMLItem());
+            }
+
             Skills.Import(newSkills, true);
         }
 

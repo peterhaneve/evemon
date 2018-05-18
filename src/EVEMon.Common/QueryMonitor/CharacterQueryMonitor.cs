@@ -35,6 +35,12 @@ namespace EVEMon.Common.QueryMonitor
                     if (!result.HasError)
                         onSuccess.Invoke(result.Result);
                 }
+
+                foreach(var monitor in character.QueryMonitors.Where(
+                    monitor => monitor.Method.HasParent(method)))
+                {
+                    character.QueryMonitors.Query(monitor.Method);
+                }
             })
         {
             m_character = character;

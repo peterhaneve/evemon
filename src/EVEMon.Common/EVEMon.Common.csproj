@@ -159,6 +159,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AsyncPump.cs" />
+    <Compile Include="Attributes\ParentAttribute.cs" />
     <Compile Include="CloudStorageServices\AuthenticationSteps.cs" />
     <Compile Include="Collections\Global\GlobalAPIProviderCollection.cs" />
     <Compile Include="Constants\NetworkConstants1.Designer.cs">

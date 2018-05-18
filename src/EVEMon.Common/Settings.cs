@@ -39,6 +39,7 @@ namespace EVEMon.Common
         {
             SSOClientID = string.Empty;
             SSOClientSecret = string.Empty;
+            SSOScopes = Constants.NetworkConstants.SSOScopes;
             UI = new UISettings();
             G15 = new G15Settings();
             Proxy = new ProxySettings();
@@ -81,6 +82,11 @@ namespace EVEMon.Common
         /// Gets or sets the SSO secret key.
         /// </summary>
         public static string SSOClientSecret { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the SSO scopes.
+        /// </summary>
+        public static string SSOScopes { get; private set; }
 
         /// <summary>
         /// Gets or sets the compatibility mode.
@@ -193,6 +199,7 @@ namespace EVEMon.Common
                 // API settings
                 SSOClientID = s_settings.SSOClientID ?? string.Empty;
                 SSOClientSecret = s_settings.SSOClientSecret ?? string.Empty;
+                SSOScopes = !string.IsNullOrEmpty(s_settings.SSOScopes) ? s_settings.SSOScopes : Constants.NetworkConstants.SSOScopes;
 
                 // User settings
                 UI = s_settings.UI;
@@ -355,6 +362,7 @@ namespace EVEMon.Common
             {
                 SSOClientID = SSOClientID,
                 SSOClientSecret = SSOClientSecret,
+                SSOScopes = SSOScopes,
                 Revision = Revision,
                 Compatibility = Compatibility,
                 Scheduler = Scheduler.Export(),
