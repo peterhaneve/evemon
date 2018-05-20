@@ -230,9 +230,7 @@ namespace EVEMon.CharacterMonitoring
 
             Int64 skillPoints = (skill.Skill != null) && (skill.Level > skill.Skill.Level + 1)
                 ? skill.CurrentSP
-                : !hasSkill
-                    ? skill.StartSP
-                    : skill.Skill.SkillPoints;
+                : !hasSkill ? 0 : skill.StartSP;
             Int64 skillPointsToNextLevel = !hasSkill
                 ? skill.EndSP
                 : skill.Skill.StaticData.GetPointsRequiredForLevel(Math.Min(skill.Level, 5));
