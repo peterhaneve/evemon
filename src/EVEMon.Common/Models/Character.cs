@@ -824,7 +824,7 @@ namespace EVEMon.Common.Models
                         skill.Skillpoints = Math.Max(skill.Skillpoints, queuedSkill.EndSP);
                     }
                     else
-                        skill.Skillpoints = Math.Max(skill.Skillpoints, queuedSkill.CurrentSP);
+                        skill.Skillpoints = Math.Min(skill.Skillpoints, queuedSkill.CurrentSP);
                 }
 
                 newSkills.AddLast(skill.ToXMLItem());
