@@ -20,6 +20,8 @@ namespace EVEMon.Common.QueryMonitor
         private readonly CharacterQueryMonitor<EsiAPICharacterSheet> m_charSheetMonitor;
         private readonly CharacterQueryMonitor<EsiAPISkillQueue> m_charSkillQueueMonitor;
         private readonly CharacterQueryMonitor<EsiAPISkills> m_charSkillsMonitor;
+        private readonly CharacterQueryMonitor<List<int>> m_charImplantsMonitor;
+        private readonly CharacterQueryMonitor<EsiAPIAttributes> m_charAttributesMonitor;
         private readonly CharacterQueryMonitor<EsiAPIMarketOrders> m_charMarketOrdersMonitor;
         private readonly CharacterQueryMonitor<EsiAPIContracts> m_charContractsMonitor;
         private readonly CharacterQueryMonitor<EsiAPIIndustryJobs> m_charIndustryJobsMonitor;
@@ -57,13 +59,15 @@ namespace EVEMon.Common.QueryMonitor
                 ccpCharacter, ESIAPICharacterMethods.Clones, OnCharacterClonesUpdated,
                 notifiers.NotifyCharacterClonesError));
             // Implants
-            m_characterQueryMonitors.Add(new CharacterQueryMonitor<List<int>>(
+            m_charImplantsMonitor = new CharacterQueryMonitor<List<int>>(
                 ccpCharacter, ESIAPICharacterMethods.Implants, OnCharacterImplantsUpdated,
-                notifiers.NotifyCharacterImplantsError));
+                notifiers.NotifyCharacterImplantsError);
+            m_characterQueryMonitors.Add(m_charImplantsMonitor);
             // Attributes
-            m_characterQueryMonitors.Add(new CharacterQueryMonitor<EsiAPIAttributes>(
+            m_charAttributesMonitor = new CharacterQueryMonitor<EsiAPIAttributes>(
                 ccpCharacter, ESIAPICharacterMethods.Attributes, OnCharacterAttributesUpdated,
-                notifiers.NotifyCharacterAttributesError));
+                notifiers.NotifyCharacterAttributesError);
+            m_characterQueryMonitors.Add(m_charAttributesMonitor);
             // Ship
             m_characterQueryMonitors.Add(new CharacterQueryMonitor<EsiAPIShip>(
                 ccpCharacter, ESIAPICharacterMethods.Ship, OnCharacterShipUpdated,
@@ -330,7 +334,7 @@ namespace EVEMon.Common.QueryMonitor
             // Character may have been deleted since we queried
             if (target != null)
             {
-                target.Import(result);
+                target.Import(result, m_charAttributesMonitor?.LastResult?.Result);
             }
         }
 

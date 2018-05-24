@@ -845,7 +845,7 @@ namespace EVEMon.Common.Models
         /// Imports data from the given implants information.
         /// </summary>
         /// <param name="implants">The serialized implant information</param>
-        internal void Import(List<int> implants)
+        internal void Import(List<int> implants, EsiAPIAttributes attributes)
         {
             // Implants
             var newImplants = new LinkedList<SerializableNewImplant>();
@@ -856,6 +856,11 @@ namespace EVEMon.Common.Models
                     Name = StaticItems.GetItemName(implant)
                 });
             CurrentImplants.Import(newImplants);
+
+            // ESI reports implants as a part of attributes, so if attributes are imported before implants the implant bonus is added on top after implants are imported.
+            // Because of that, re-trigger attributes import after implant import, as it will subtract current implant bonus
+            if (attributes != null)
+                Import(attributes);
         }
 
         /// <summary>
