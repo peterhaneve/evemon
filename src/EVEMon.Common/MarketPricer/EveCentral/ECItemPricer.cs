@@ -31,7 +31,7 @@ namespace EVEMon.Common.MarketPricer.EveCentral
         /// <summary>
         /// Gets the name.
         /// </summary>
-        public override string Name => "EVE-Central";
+        public override string Name => "EVEMarketer";
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="ItemPricer" /> is enabled.

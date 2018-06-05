@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace EVEMon.Common.Serialization.EveCentral.MarketPricer
 {
-    [XmlRoot("evec_api")]
+    [XmlRoot("exec_api")]
     public sealed class SerializableECItemPrices
     {
         private readonly Collection<SerializableECItemPriceListItem> m_itemPrices;

@@ -7,7 +7,7 @@ namespace EVEMon.Common.Serialization.EveCentral.MarketPricer
         [XmlAttribute("id")]
         public int ID { get; set; }
 
-        [XmlElement("all")]
+        [XmlElement("sell")]
         public SerializableECItemPriceItem Prices { get; set; }
     }
 }

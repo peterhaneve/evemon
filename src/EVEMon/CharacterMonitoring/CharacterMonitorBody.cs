@@ -1331,7 +1331,7 @@ namespace EVEMon.CharacterMonitoring
                 showOnlyCharMenuItem.Checked = contractsList.ShowIssuedFor == IssuedFor.Character;
             }
 
-            if (multiPanel.SelectedPage != jobsPage)
+            if (multiPanel.SelectedPage == jobsPage)
             {
                 jobsList.ShowIssuedFor = showOnlyCorpMenuItem.Checked ? IssuedFor.Corporation : IssuedFor.All;
                 showOnlyCharMenuItem.Checked = jobsList.ShowIssuedFor == IssuedFor.Character;

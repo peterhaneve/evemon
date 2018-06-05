@@ -462,10 +462,10 @@
     <value>http://api.eve-marketdata.com</value>
   </data>
   <data name="EVECentralAPIItemPrices" xml:space="preserve">
-    <value>/api/marketstat</value>
+    <value>/ec/marketstat</value>
   </data>
   <data name="EVECentralBaseUrl" xml:space="preserve">
-    <value>http://api.eve-central.com</value>
+    <value>https://api.evemarketer.com</value>
   </data>
   <data name="NISTTimeServer" xml:space="preserve">
     <value>tcp://time.nist.gov:13</value>

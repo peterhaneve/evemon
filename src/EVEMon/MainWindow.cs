@@ -403,6 +403,14 @@ namespace EVEMon {
         }
 
         /// <summary>
+        /// See MSDN.
+        /// </summary>
+        /// <param name="hWndLock"></param>
+        /// <returns></returns>
+        [DllImport("user32.dll")]
+        public static extern bool LockWindowUpdate(IntPtr hWndLock);
+
+        /// <summary>
         /// Updates the tab pages.
         /// </summary>
         private void UpdateTabs()
@@ -419,7 +427,7 @@ namespace EVEMon {
         /// </summary>
         private void LayoutTabPages()
         {
-            this.SuspendDrawing();
+            LockWindowUpdate(Handle);
 
             try
             {
@@ -480,7 +488,8 @@ namespace EVEMon {
             finally
             {
                 tcCharacterTabs.Visible = tcCharacterTabs.Controls.Count > 0;
-                this.ResumeDrawing();
+
+                LockWindowUpdate(IntPtr.Zero);
             }
         }
 

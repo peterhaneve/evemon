@@ -377,7 +377,7 @@ namespace EVEMon.About
             this.eveCentralLinkLabel.Padding = new System.Windows.Forms.Padding(5, 3, 0, 3);
             this.eveCentralLinkLabel.Size = new System.Drawing.Size(210, 19);
             this.eveCentralLinkLabel.TabIndex = 12;
-            this.eveCentralLinkLabel.Text = "EVE-Central for their market data and API.";
+            this.eveCentralLinkLabel.Text = "EVEMarketer for their market data and API.";
             this.eveCentralLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
             // 
             // eveMarketDataLinkLabel
