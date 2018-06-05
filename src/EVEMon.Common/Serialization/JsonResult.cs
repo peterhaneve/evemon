@@ -91,6 +91,16 @@ namespace EVEMon.Common.Serialization
         }
 
         /// <summary>
+        /// Constructor from a JSON serialization exception
+        /// </summary>
+        /// <param name="exception">The exception</param>
+        public JsonResult(SerializationException exception)
+            : this(exception as Exception)
+        {
+            m_error = APIErrorType.Json;
+        }
+
+        /// <summary>
         /// Constructor from a CCP API internal error
         /// </summary>
         /// <param name="code">The CCP error code.</param>
