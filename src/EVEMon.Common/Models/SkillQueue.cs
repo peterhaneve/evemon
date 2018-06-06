@@ -129,6 +129,8 @@ namespace EVEMon.Common.Models
                 Items.RemoveAt(0);
             }
 
+            if (Items.Count == 0) IsPaused = false;
+
             if (skillsCompleted.Any() && !Settings.IsRestoring)
             {
                 // Send a notification, only if skills were completed
