@@ -1205,6 +1205,12 @@ namespace EVEMon.SkillPlanner
             if (lvSkills.SelectedItems.Count == 0)
                 return;
 
+            if (lvSkills.SelectedItems.Count == 1 && lvSkills.SelectedItems[0].Tag is RemappingPoint)
+            {
+                tsbToggleRemapping_Click(null, null);
+                return;
+            }
+
             IPlanOperation operation = PrepareSelectionRemoval();
             if (operation == null)
                 return;
@@ -1615,12 +1621,7 @@ namespace EVEMon.SkillPlanner
         /// <param name="e"></param>
         private void miRemoveFromPlan_Click(object sender, EventArgs e)
         {
-            ListView.SelectedListViewItemCollection items = lvSkills.SelectedItems;
-
-            if (items.Count == 1 && items[0].Tag is RemappingPoint)
-                tsbToggleRemapping_Click(null, null);
-            else
-                RemoveSelectedEntries();
+            RemoveSelectedEntries();
         }
 
         /// <summary>
