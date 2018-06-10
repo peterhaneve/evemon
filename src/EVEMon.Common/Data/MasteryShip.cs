@@ -91,7 +91,7 @@ namespace EVEMon.Common.Data
             while (true)
             {
                 bool updatedAnything = Items
-                    .Aggregate(false, (current, mastery) => current | mastery.TryUpdateMasteryStatus());
+                    .Aggregate(false, (current, mastery) => current || mastery.TryUpdateMasteryStatus());
 
                 if (!updatedAnything)
                     break;
