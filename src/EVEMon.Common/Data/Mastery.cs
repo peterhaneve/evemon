@@ -139,9 +139,9 @@ namespace EVEMon.Common.Data
             foreach (SkillLevel prereqSkill in GetPrerequisiteSkills)
             {
                 // Trained only if the skill's level is greater or equal than the minimum level
-                trained &= prereqSkill.Skill.Level >= prereqSkill.Level;
+                trained = trained && prereqSkill.Skill.Level >= prereqSkill.Level;
 
-                noPrereq &= prereqSkill.AllDependencies.All(x => !x.IsTrained);
+                noPrereq = noPrereq && prereqSkill.AllDependencies.All(x => !x.IsTrained);
             }
 
             // Updates status
