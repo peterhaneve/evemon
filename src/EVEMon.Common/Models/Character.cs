@@ -320,16 +320,14 @@ namespace EVEMon.Common.Models
         {
             get
             {
-                int id = LastKnownLocation.StationID;
-                return EveIDToStation.GetIDToStation(id != 0 ? id : LastKnownLocation.
-                    StructureID);
+                return EveIDToStation.GetIDToStation(LastKnownLocation?.StationID ?? LastKnownLocation?.StructureID ?? 0L);
             }
         }
 
         /// <summary>
         /// Gets the character's last known solar system location.
         /// </summary>
-        public SolarSystem LastKnownSolarSystem => StaticGeography.GetSolarSystemByID(LastKnownLocation.SolarSystemID);
+        public SolarSystem LastKnownSolarSystem => StaticGeography.GetSolarSystemByID(LastKnownLocation?.SolarSystemID ?? 0);
 
         /// <summary>
         /// Gets Alpha/Omega status for this character.
