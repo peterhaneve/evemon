@@ -2,6 +2,7 @@
 using EVEMon.Common.Extensions;
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -28,9 +29,10 @@ namespace EVEMon.Common.Net
         /// <param name="postData">The post data. If null, GET will be used.</param>
         /// <param name="parser">The function which will parse the stream.</param>
         /// <param name="token">The ESI token, or null if none is used.</param>
+        /// <param name="eTag">The previous result's entity tag, if applicable.</param>
         public static async Task<DownloadResult<T>> DownloadStreamAsync<T>(Uri url,
             ParseDataDelegate<T> parser, bool acceptEncoded = false,
-            HttpPostData postData = null, string token = null)
+            HttpPostData postData = null, string token = null, string eTag = null)
         {
             string urlValidationError;
             if (!IsValidURL(url, out urlValidationError))
@@ -43,7 +45,7 @@ namespace EVEMon.Common.Net
             try
             {
                 var response = await request.SendAsync(url, (postData == null) ?
-                    HttpMethod.Get : HttpMethod.Post, postData, StreamAccept).
+                    HttpMethod.Get : HttpMethod.Post, postData, StreamAccept, eTag).
                     ConfigureAwait(false);
 
                 using (response)
@@ -73,16 +75,20 @@ namespace EVEMon.Common.Net
             HttpWebClientServiceException error = null;
             int responseCode = (int)response.StatusCode;
             DateTime serverTime = response.Headers.ServerTimeUTC();
+            DateTime? expires = response.Content?.Headers?.ExpiresTimeUTC();
+
 
             if (stream == null)
                 // No stream (can this happen)?
                 error = HttpWebClientServiceException.Exception(requestBaseUrl,
                     new ArgumentNullException(nameof(stream)));
-            else
-                // Attempt to invoke parser
+            else if (response.StatusCode != HttpStatusCode.NotModified)
+                // If not modified, there is no data to parse
+                // Otherwise, attempt to invoke parser
                 result = parser.Invoke(Util.ZlibUncompress(stream), responseCode);
 
-            return new DownloadResult<T>(result, error, responseCode, serverTime);
+            return new DownloadResult<T>(result, error, responseCode, serverTime,
+                expires, response.Headers.ETag?.Tag);
         }
     }
 }

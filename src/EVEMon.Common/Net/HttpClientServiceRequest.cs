@@ -76,8 +76,10 @@ namespace EVEMon.Common.Net
         /// <param name="method">The method.</param>
         /// <param name="postData">The post data.</param>
         /// <param name="accept">The accept.</param>
+        /// <param name="eTag">The previous result's entity tag, if applicable.</param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> SendAsync(Uri url, HttpMethod method, HttpPostData postData, string accept)
+        public async Task<HttpResponseMessage> SendAsync(Uri url, HttpMethod method,
+            HttpPostData postData, string accept, string eTag = null)
         {
             while (true)
             {
@@ -92,7 +94,7 @@ namespace EVEMon.Common.Net
                 try
                 {
                     HttpClientHandler httpClientHandler = GetHttpClientHandler();
-                    HttpRequestMessage request = GetHttpRequest(AuthToken, postData?.ContentType);
+                    HttpRequestMessage request = GetHttpRequest(AuthToken, postData?.ContentType, eTag);
                     response = await GetHttpResponseAsync(httpClientHandler, request).ConfigureAwait(false);
 
                     EnsureSuccessStatusCode(response);
@@ -161,7 +163,8 @@ namespace EVEMon.Common.Net
                                        response.RequestMessage.RequestUri.Host != APIProvider.TestProvider.Url.Host &&
                                        contentTypeMediaType != null && !contentTypeMediaType.Contains("xml");
 
-            if (isNotCCPWithXmlContent || response.Content?.Headers?.ContentLength == 0)
+            if (isNotCCPWithXmlContent ||
+                (response.Content?.Headers?.ContentLength == 0 && response.StatusCode != HttpStatusCode.NotModified))
                 response.EnsureSuccessStatusCode();
         }
 
@@ -227,8 +230,9 @@ namespace EVEMon.Common.Net
         /// </summary>
         /// <param name="token">If not null, adds the specified ESI token to the headers.</param>
         /// <param name="dataContentType">The content type of the input data.</param>
+        /// <param name="eTag">The previous result's entity tag, if applicable.</param>
         /// <returns>The HTTP request.</returns>
-        private HttpRequestMessage GetHttpRequest(string token, string dataContentType)
+        private HttpRequestMessage GetHttpRequest(string token, string dataContentType, string eTag = null)
         {
             if (m_method == HttpMethod.Get && m_postData != null)
                 m_url = new Uri($"{m_url.AbsoluteUri}?{m_postData}");
@@ -255,6 +259,9 @@ namespace EVEMon.Common.Net
             request.Headers.Pragma.TryParseAdd("no-cache");
             request.Headers.UserAgent.TryParseAdd(HttpWebClientServiceState.UserAgent);
             request.Headers.Accept.ParseAdd(m_accept);
+
+            if (!string.IsNullOrEmpty(eTag))
+                request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(eTag));
 
             if (m_acceptEncoded)
                 request.Headers.AcceptEncoding.ParseAdd("gzip,deflate;q=0.8");

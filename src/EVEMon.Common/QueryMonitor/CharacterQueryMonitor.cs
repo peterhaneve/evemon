@@ -73,7 +73,7 @@ namespace EVEMon.Common.QueryMonitor
         {
             provider.ThrowIfNull(nameof(provider));
 
-            provider.QueryEsiAsync(Method, m_apiKey.AccessToken, m_character.CharacterID, callback);
+            provider.QueryEsiAsync(Method, m_apiKey.AccessToken, m_character.CharacterID, callback, eTag: LastResult?.ETag);
         }
     }
 }

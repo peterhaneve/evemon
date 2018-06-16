@@ -331,5 +331,17 @@ namespace EVEMon.Common.Extensions
             DateTimeOffset offset = headers.Date ?? DateTimeOffset.UtcNow;
             return offset.UtcDateTime;
         }
+
+        /// <summary>
+        /// Retrieves the Expires header value as a UTC DateTime
+        /// </summary>
+        /// <param name="headers"></param>
+        /// <returns></returns>
+        public static DateTime? ExpiresTimeUTC(this HttpContentHeaders headers)
+        {
+            DateTimeOffset? offset = headers.Expires;
+
+            return offset?.UtcDateTime;
+        }
     }
 }

@@ -469,9 +469,11 @@ namespace EVEMon.Common
         /// <param name="token">The ESI token.</param>
         /// <param name="acceptEncoded">if set to <c>true</c> [accept encoded].</param>
         /// <param name="postData">The post data.</param>
+        /// <param name="eTag">The previous result's entity tag, if applicable.</param>
         /// <returns></returns>
         public static async Task<JsonResult<T>> DownloadJsonAsync<T>(Uri url, string token,
-            bool acceptEncoded = false, string postData = null, string postContentType = null)
+            bool acceptEncoded = false, string postData = null, string postContentType = null,
+            string eTag = null)
             where T : class
         {
             // Create POST data body
@@ -483,19 +485,22 @@ namespace EVEMon.Common
             try
             {
                 DownloadResult<T> asyncResult = await HttpWebClientService.DownloadStreamAsync<T>(
-                    url, ParseJSONObject<T>, acceptEncoded, content, token);
+                    url, ParseJSONObject<T>, acceptEncoded, content, token, eTag);
                 var error = asyncResult.Error;
-                T data;
 
                 // Was there an HTTP error?
                 if (error != null)
                     result = new JsonResult<T>(error);
-                else if ((data = asyncResult.Result) == default(T))
+                else if (asyncResult.Result == default(T)
+                    && asyncResult.ResponseCode != (int)HttpStatusCode.NotModified)
                     // This will become a json error
                     result = new JsonResult<T>(new InvalidOperationException("null JSON response"));
                 else
-                    result = new JsonResult<T>(asyncResult.ResponseCode, data) {
-                        CurrentTime = asyncResult.ServerTime
+                    result = new JsonResult<T>(asyncResult.ResponseCode, asyncResult.Result)
+                    {
+                        CurrentTime = asyncResult.ServerTime,
+                        Expires = asyncResult.Expires,
+                        ETag = asyncResult.ETag
                     };
             }
             catch (InvalidOperationException e)
