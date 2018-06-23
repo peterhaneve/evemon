@@ -275,7 +275,8 @@ namespace EVEMon.Common.QueryMonitor
                 LastResult = result;
                 m_lastResponse = result.Response;
                 // Notify subscribers
-                m_onUpdated?.Invoke(result);
+                if (result.HasData)
+                    m_onUpdated?.Invoke(result);
             }
         }
 
