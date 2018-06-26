@@ -102,13 +102,17 @@ namespace EVEMon.Common.Service
         /// <param name="entities">The entities.</param>
         private static void Import(IEnumerable<SerializableOutpost> entities)
         {
-            foreach (SerializableOutpost entity in entities)
+            if (entities != null)
             {
-                long id = entity.StationID;
+                foreach (SerializableOutpost entity in entities)
+                {
+                    if (entity == null) continue;
+                    long id = entity.StationID;
 
-                // Add the query result to our cache list if it doesn't exist already
-                if (!s_cacheList.ContainsKey(id))
-                    s_cacheList.Add(id, entity);
+                    // Add the query result to our cache list if it doesn't exist already
+                    if (!s_cacheList.ContainsKey(id))
+                        s_cacheList.Add(id, entity);
+                }
             }
         }
 
@@ -228,6 +232,23 @@ namespace EVEMon.Common.Service
         /// </summary>
         private class CitadelStationProvider : IDToObjectProvider<SerializableOutpost, ESIKey>
         {
+            /// <summary>
+            /// Holds information about the query
+            /// </summary>
+            private class CitadelQueryInfo
+            {
+                public CitadelQueryInfo(long citadelId, ESIKey key)
+                {
+                    this.citadelId = citadelId;
+                    this.key = key;
+                }
+                public long citadelId;
+                public ESIKey key;
+            }
+#if HAMMERTIME
+            private ISet<long> FailedHammertimeIds = new HashSet<long>();
+#endif
+            private IDictionary<long, ISet<long>> FailedEsiIds = new Dictionary<long, ISet<long>>();
             public CitadelStationProvider(IDictionary<long, SerializableOutpost> cacheList) :
                 base(cacheList) { }
 
@@ -251,20 +272,39 @@ namespace EVEMon.Common.Service
                 }
                 if (id != 0L)
                 {
-                    if (esiKey != null)
-                        // Query ESI for the citadel information
-                        // No response is given because keeping a list of all previous
-                        // responses just for their expiry / etag is not feasible
-                        EveMonClient.APIProviders.CurrentProvider.QueryEsi<EsiAPIStructure>(
-                            ESIAPIGenericMethods.CitadelInfo, OnQueryStationUpdatedEsi,
-                            new ESIParams(null, esiKey.AccessToken)
-                            {
-                                ParamOne = id
-                            }, id);
+                    lock (FailedEsiIds)
+                    {
+                        if (esiKey != null && (!FailedEsiIds.ContainsKey(id) || !FailedEsiIds[id].Contains(esiKey.ID)))
+                        {
+                            // Query ESI for the citadel information
+                            // No response is given because keeping a list of all previous
+                            // responses just for their expiry / etag is not feasible
+                            EveMonClient.APIProviders.CurrentProvider.QueryEsi<EsiAPIStructure>(
+                                ESIAPIGenericMethods.CitadelInfo, OnQueryStationUpdatedEsi,
+                                new ESIParams(null, esiKey.AccessToken)
+                                {
+                                    ParamOne = id
+                                }, new CitadelQueryInfo(id, esiKey));
+                        }
+                        else
+                        {
 #if HAMMERTIME
-                    else
-                        LoadCitadelInformationFromHammertimeAPI(id);
+                            lock (FailedHammertimeIds)
+                                if (!FailedHammertimeIds.Contains(id))
+                                    LoadCitadelInformationFromHammertimeAPI(id);
+                                else
+                                    OnLookupComplete();
+#else
+                            // we move on to the next request
+                            OnLookupComplete();
 #endif
+                        }
+                    }
+                }
+                else // this should not happen but lets be sure
+                {
+                    // move on to the next request
+                    OnLookupComplete();
                 }
             }
 
@@ -301,33 +341,62 @@ namespace EVEMon.Common.Service
                 if (citInfo.Count == 1)
                     AddToCache(id, citInfo.Values.First().ToXMLItem(id));
                 else
-                    // Requested, but failed
-                    AddToCache(id, null);
+                {
+                    lock(FailedHammertimeIds)
+                        FailedHammertimeIds.Add(id);
+                    // this creates an other id lookup if there are ids pending
+                    // triggers events etc
+                    OnLookupComplete();
+                }
             }
 #endif
 
             private void OnQueryStationUpdatedEsi(EsiResult<EsiAPIStructure> result,
                 object idObject)
             {
-                long id = (idObject as long?) ?? 0L;
+                CitadelQueryInfo info = (idObject as CitadelQueryInfo);
 
                 // Bail if there is an error
-                if (result.HasError || id == 0L)
+                if (result.HasError || info.citadelId == 0L)
                 {
                     EveMonClient.Notifications.NotifyCitadelQueryError(result);
                     m_queryPending = false;
 #if HAMMERTIME
-                    LoadCitadelInformationFromHammertimeAPI(id);
-#else
-                    // Requested but failed
-                    AddToCache(id, null);
+                    lock (FailedHammertimeIds)
+                    {
+                        if (!FailedHammertimeIds.Contains(info.citadelId))
+                            LoadCitadelInformationFromHammertimeAPI(info.citadelId);
+                        else
+                        {
+#endif
+                            // Requested but failed
+                            lock (FailedEsiIds)
+                            {
+                                ISet<long> keySet = null;
+                                if (FailedEsiIds.ContainsKey(info.citadelId))
+                                {
+                                    keySet = FailedEsiIds[info.citadelId];
+                                }
+                                else
+                                {
+                                    keySet = new HashSet<long>();
+                                    FailedEsiIds.Add(info.citadelId, keySet);
+                                }
+                                keySet.Add(info.key.ID);
+                            }
+                            // do start a new round if there is more ids
+                            // if needed trigger event
+                            OnLookupComplete();
+#if HAMMERTIME
+                        }
+                    }
 #endif
                     return;
                 }
 
                 EveMonClient.Notifications.InvalidateAPIError();
 
-                AddToCache(id, result.Result.ToXMLItem(id));
+                AddToCache(info.citadelId, result.Result.ToXMLItem(info.citadelId));
             }
 
             /// <summary>
