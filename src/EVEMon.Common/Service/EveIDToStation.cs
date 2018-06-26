@@ -102,13 +102,17 @@ namespace EVEMon.Common.Service
         /// <param name="entities">The entities.</param>
         private static void Import(IEnumerable<SerializableOutpost> entities)
         {
-            foreach (SerializableOutpost entity in entities)
+            if (entities != null)
             {
-                long id = entity.StationID;
+                foreach (SerializableOutpost entity in entities)
+                {
+                    if (entity == null) continue;
+                    long id = entity.StationID;
 
-                // Add the query result to our cache list if it doesn't exist already
-                if (!s_cacheList.ContainsKey(id))
-                    s_cacheList.Add(id, entity);
+                    // Add the query result to our cache list if it doesn't exist already
+                    if (!s_cacheList.ContainsKey(id))
+                        s_cacheList.Add(id, entity);
+                }
             }
         }
 
@@ -228,6 +232,9 @@ namespace EVEMon.Common.Service
         /// </summary>
         private class CitadelStationProvider : IDToObjectProvider<SerializableOutpost, ESIKey>
         {
+#if HAMMERTIME
+            private ISet<long> FailedHammertimeIds = new HashSet<long>();
+#endif
             public CitadelStationProvider(IDictionary<long, SerializableOutpost> cacheList) :
                 base(cacheList) { }
 
@@ -263,7 +270,10 @@ namespace EVEMon.Common.Service
                             }, id);
 #if HAMMERTIME
                     else
-                        LoadCitadelInformationFromHammertimeAPI(id);
+                    {
+                        if (!FailedHammertimeIds.Contains(id))
+                            LoadCitadelInformationFromHammertimeAPI(id);
+                    }
 #endif
                 }
             }
@@ -301,8 +311,12 @@ namespace EVEMon.Common.Service
                 if (citInfo.Count == 1)
                     AddToCache(id, citInfo.Values.First().ToXMLItem(id));
                 else
-                    // Requested, but failed
-                    AddToCache(id, null);
+                {
+                    FailedHammertimeIds.Add(id);
+                    // this creates an other id lookup if there are ids pending
+                    // triggers events etc
+                    OnLookupComplete();
+                }
             }
 #endif
 
@@ -317,11 +331,13 @@ namespace EVEMon.Common.Service
                     EveMonClient.Notifications.NotifyCitadelQueryError(result);
                     m_queryPending = false;
 #if HAMMERTIME
-                    LoadCitadelInformationFromHammertimeAPI(id);
-#else
+                    if (!FailedHammertimeIds.Contains(id))
+                        LoadCitadelInformationFromHammertimeAPI(id);
+                    else
+#endif
                     // Requested but failed
                     AddToCache(id, null);
-#endif
+
                     return;
                 }
 
