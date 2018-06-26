@@ -286,15 +286,25 @@ namespace EVEMon.Common.Service
                                     ParamOne = id
                                 }, new CitadelQueryInfo(id, esiKey));
                         }
-#if HAMMERTIME
                         else
                         {
-                            lock(FailedHammertimeIds)
+#if HAMMERTIME
+                            lock (FailedHammertimeIds)
                                 if (!FailedHammertimeIds.Contains(id))
                                     LoadCitadelInformationFromHammertimeAPI(id);
-                        }
+                                else
+                                    OnLookupComplete();
+#else
+                            // we move on to the next request
+                            OnLookupComplete();
 #endif
+                        }
                     }
+                }
+                else // this should not happen but lets be sure
+                {
+                    // move on to the next request
+                    OnLookupComplete();
                 }
             }
 
