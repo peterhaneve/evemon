@@ -17,8 +17,6 @@ namespace EVEMon.Common.Models
     public sealed class SkillQueue : ReadonlyCollection<QueuedSkill>
     {
         private readonly CCPCharacter m_character;
-        private readonly DateTime m_startTime = DateTime.UtcNow;
-
 
         #region Constructor
 
@@ -176,7 +174,7 @@ namespace EVEMon.Common.Models
 
             // If the queue is paused, CCP sends empty start and end time
             // So we base the start time on when the skill queue was started
-            DateTime startTimeWhenPaused = m_startTime;
+            DateTime startTimeWhenPaused = DateTime.UtcNow;
 
             // Imports the queued skills and checks whether they are paused
             Items.Clear();
@@ -190,7 +188,8 @@ namespace EVEMon.Common.Models
             }
 
             // Update skills with the imported data
-            UpdateOnTimerTick();
+            if (!IsPaused)
+                UpdateOnTimerTick();
 
             // Skills may have been removed from the queue by the timer tick method - if it's empty, it's not paused
             if (!Items.Any())
