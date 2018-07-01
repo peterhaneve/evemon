@@ -27,6 +27,7 @@ namespace EVEMon.Common.Serialization.Eve
                 cachedUntil = GetErrorCacheTime();
             else
             {
+                expires = expires.AddSeconds(2.0);
                 DateTimeOffset ccpCacheTime = ((DateTimeOffset)expires), serverTime =
                     response.Time ?? DateTimeOffset.UtcNow;
                 // Ensure that cache date is not in the past
