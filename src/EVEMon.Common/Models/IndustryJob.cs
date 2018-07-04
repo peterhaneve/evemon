@@ -337,7 +337,8 @@ namespace EVEMon.Common.Models
             switch (Activity)
             {
                 case BlueprintActivity.Manufacturing:
-                    return StaticBlueprints.GetBlueprintByID(InstalledItem.ID).ProducesItem ?? StaticItems.GetItemByID(0);
+                    return StaticBlueprints.GetBlueprintByID(InstalledItem.ID).ProducesItem ??
+                        StaticItems.GetItemByID(0);
                 case BlueprintActivity.ResearchingMaterialEfficiency:
                 case BlueprintActivity.ResearchingTimeEfficiency:
                 case BlueprintActivity.Copying:
@@ -357,7 +358,8 @@ namespace EVEMon.Common.Models
         /// <returns>Name of the installation.</returns>
         private string GetInstallation(long id, CCPCharacter character)
         {
-            return EveIDToStation.GetIDToStation(id, character)?.Name ?? EveMonConstants.UnknownText;
+            return EveIDToStation.GetIDToStation(id, character)?.Name ?? EveMonConstants.
+                UnknownText;
         }
 
         /// <summary>
@@ -426,7 +428,6 @@ namespace EVEMon.Common.Models
             // If location not already determined
             if (m_installedItemLocationID != 0L && (SolarSystem == null || SolarSystem.ID == 0))
             {
-
                 Station station = EveIDToStation.GetIDToStation(m_installedItemLocationID, character);
 
                 if (station != null)
