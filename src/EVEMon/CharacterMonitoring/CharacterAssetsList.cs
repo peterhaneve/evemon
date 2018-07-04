@@ -238,7 +238,7 @@ namespace EVEMon.CharacterMonitoring
             lvAssets.Hide();
             estimatedCostPanel.Hide();
             noAssetsLabel.Visible = Character?.Assets.Count == 0;
-
+            
             Assets = Character?.Assets;
             Columns = Settings.UI.MainWindow.Assets.Columns;
             Grouping = Character?.UISettings.AssetsGroupBy;
@@ -293,7 +293,7 @@ namespace EVEMon.CharacterMonitoring
             {
                 throbber.Show();
                 throbber.State = ThrobberState.Rotating;
-
+                
                 AddColumns();
 
                 // We update the content
