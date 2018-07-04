@@ -69,7 +69,8 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the full celestial path of the item's location.
         /// </summary>
-        public string FullLocation {
+        public string FullLocation
+        {
             get
             {
                 UpdateLocation();

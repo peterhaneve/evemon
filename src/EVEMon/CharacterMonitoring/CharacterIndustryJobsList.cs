@@ -1180,7 +1180,7 @@ namespace EVEMon.CharacterMonitoring
             UpdateColumns();
         }
 
-#endregion
+        #endregion
 
 
         #region Updates Expandable Panel On Global Events

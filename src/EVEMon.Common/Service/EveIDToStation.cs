@@ -70,24 +70,9 @@ namespace EVEMon.Common.Service
                 // Citadels have ID over maximum int value
                 var serStation = s_cita.LookupIDESI(id, character)?.Station;
                 if (serStation != null)
-                {
-                    station = new Station(serStation);
-                }
-                else
-                {
-#warning wvdvegt Added, Create a Fake Locaion in Tanoo (nice SolarSystemID)
-                    station = new Station(new SerializableOutpost()
-                    {
-                        CorporationID = 0,
-                        CorporationNameXml = EveMonConstants.UnknownText,
-                        SolarSystemID = 30000001, // Tanoo
-                        CorporationName = EveMonConstants.UnknownText,
-                        StationID = id,
-                        StationName = $"[{id}]",
-                        StationNameXml = $"[{id}]",
-                        StationTypeID = 0,
-                    });
-                }
+
+                    if (serStation != null)
+                        station = new Station(serStation);
             }
             return station;
         }
