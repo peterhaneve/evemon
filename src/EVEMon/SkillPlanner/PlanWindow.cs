@@ -663,29 +663,27 @@ namespace EVEMon.SkillPlanner
                 return false;
 
             // Any lines not with a valid skill ending?
-            foreach (string line in lines)
+            foreach (string lineAll in lines)
             {
-                if (String.IsNullOrEmpty(line) || !Regex.IsMatch(line, @"[I,V]{1,3}$"))
+                string line = lineAll.Trim();
+
+                if (!string.IsNullOrEmpty(line))
                 {
-                    return false;
-                }
+                    int idx = line.LastIndexOf(" ");
+                    if (idx != -1)
+                    {
+                        if (StaticSkills.GetSkillByName(line.Substring(0, idx)) == null)
+                            return false;
 
-                int idx = line.LastIndexOf(" ");
-                if (idx != -1)
-                {
-                    if (StaticSkills.GetSkillByName(line.Substring(0, idx)) == null)
+                        int level = Skill.GetIntFromRoman(line.Substring(idx + 1));
+
+                        if (level < 1 || level > 5)
+                            return false;
+                    }
+                    else
                         return false;
-
-                    int level = Skill.GetIntFromRoman(line.Substring(idx + 1));
-
-                    if (level < 1 || level > 5)
-                        return false;
                 }
-                else
-                    return false;
-
-
-        }
+            }
 
             return true;
         }
@@ -837,8 +835,10 @@ namespace EVEMon.SkillPlanner
 
             CharacterScratchpad scratchpad = new CharacterScratchpad(m_character);
 
-            foreach (string line in lines)
-            {  
+            foreach (string lineAll in lines)
+            {
+                // When pasted from sites trailing spaces are often added
+                string line = lineAll.Trim();
 
                 // Split level and skill
                 int idx = line.LastIndexOf(" ");

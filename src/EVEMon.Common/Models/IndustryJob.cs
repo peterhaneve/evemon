@@ -265,7 +265,7 @@ namespace EVEMon.Common.Models
                 {
                     // Job is from a serialized object, so populate the missing info
                     if (InstalledItem == null)
-                        PopulateJobInfo(src, IssuedFor);
+                        PopulateJobInfo(src, issuedFor);
                     else
                     {
                         EndDate = src.EndDate;

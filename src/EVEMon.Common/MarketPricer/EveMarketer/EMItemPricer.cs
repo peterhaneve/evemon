@@ -39,7 +39,7 @@ namespace EVEMon.Common.MarketPricer.EveMarketer
         /// <value>
         ///   <c>true</c> if enabled; otherwise, <c>false</c>.
         /// </value>
-        protected override bool Enabled => EveMonClient.IsDebugBuild;
+        protected override bool Enabled => true;
 
         /// <summary>
         /// Gets the price by type ID.
