@@ -28,7 +28,7 @@ namespace EVEMon.Common.Service
         // Cache used to return all data, this is saved and loaded into the file
         private static readonly Dictionary<long, CitadelInfo> s_cacheList =
             new Dictionary<long, CitadelInfo>();
-        
+
         // Provider for citadels
         private static readonly CitadelStationProvider s_cita = new CitadelStationProvider(
             s_cacheList);
@@ -54,7 +54,7 @@ namespace EVEMon.Common.Service
         {
             await UpdateOnOneSecondTickAsync();
         }
-        
+
         /// <summary>
         /// Gets the station information from its ID. Works on NPC stations and citadels.
         /// Since conquerable stations were converted, no attempt is made to check the ESI
@@ -70,11 +70,28 @@ namespace EVEMon.Common.Service
                 // Citadels have ID over maximum int value
                 var serStation = s_cita.LookupIDESI(id, character)?.Station;
                 if (serStation != null)
+                {
                     station = new Station(serStation);
+                }
+                else
+                {
+#warning wvdvegt Added, Create a Fake Locaion in Tanoo (nice SolarSystemID)
+                    station = new Station(new SerializableOutpost()
+                    {
+                        CorporationID = 0,
+                        CorporationNameXml = EveMonConstants.UnknownText,
+                        SolarSystemID = 30000001, // Tanoo
+                        CorporationName = EveMonConstants.UnknownText,
+                        StationID = id,
+                        StationName = $"[{id}]",
+                        StationNameXml = $"[{id}]",
+                        StationTypeID = 0,
+                    });
+                }
             }
             return station;
         }
-        
+
         /// <summary>
         /// Initializes the cache from file.
         /// </summary>
@@ -88,7 +105,7 @@ namespace EVEMon.Common.Service
             if (cache != null)
                 Import(cache.Stations);
         }
-        
+
         /// <summary>
         /// Imports the data from the query result.
         /// </summary>
@@ -119,7 +136,7 @@ namespace EVEMon.Common.Service
 
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Saves this cache list to a file.
         /// </summary>
@@ -154,7 +171,7 @@ namespace EVEMon.Common.Service
 
             return serial;
         }
-        
+
         /// <summary>
         /// Provides citadel ID lookups. Uses the citadel info endpoint.
         /// </summary>
