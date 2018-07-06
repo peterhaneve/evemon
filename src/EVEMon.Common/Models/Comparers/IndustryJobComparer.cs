@@ -84,21 +84,13 @@ namespace EVEMon.Common.Models.Comparers
                     return x.InstalledTime.CompareTo(y.InstalledTime);
                 case IndustryJobColumn.EndTime:
                     return x.EndDate.CompareTo(y.EndDate);
-                //case IndustryJobColumn.OriginalOrCopy:
-                //    return x.BlueprintType.CompareTo(y.BlueprintType);
-                //case IndustryJobColumn.InstalledME:
-                //    return x.InstalledME.CompareTo(y.InstalledME);
-                //case IndustryJobColumn.EndME:
-                //    return (x.InstalledME + x.Runs).CompareTo(y.InstalledME + y.Runs);
-                //case IndustryJobColumn.InstalledPE:
-                //    return x.InstalledPE.CompareTo(y.InstalledPE);
-                //case IndustryJobColumn.EndPE:
-                //    return (x.InstalledPE + x.Runs).CompareTo(y.InstalledPE + y.Runs);
                 case IndustryJobColumn.Location:
+                    // null is allowed here
                     return String.Compare(x.FullLocation, y.FullLocation, StringComparison.CurrentCulture);
                 case IndustryJobColumn.Region:
                     return x.SolarSystem.Constellation.Region.CompareTo(y.SolarSystem.Constellation.Region);
                 case IndustryJobColumn.SolarSystem:
+                    // SolarSystem is not null even if location is unknown
                     return x.SolarSystem.CompareTo(y.SolarSystem);
                 case IndustryJobColumn.Installation:
                     return String.Compare(x.Installation, y.Installation, StringComparison.CurrentCulture);

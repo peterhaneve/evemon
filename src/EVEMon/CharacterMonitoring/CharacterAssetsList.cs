@@ -343,15 +343,14 @@ namespace EVEMon.CharacterMonitoring
             int scrollBarPosition = lvAssets.GetVerticalScrollBarPosition();
 
             // Store the selected item (if any) to restore it after the update
-            int selectedItem = lvAssets.SelectedItems.Count > 0
-                ? lvAssets.SelectedItems[0].Tag.GetHashCode()
-                : 0;
+            int selectedItem = lvAssets.SelectedItems.Count > 0 ? lvAssets.SelectedItems[0].
+                Tag.GetHashCode() : 0;
 
             lvAssets.BeginUpdate();
             try
             {
-                List<Asset> assets = m_list.Where(x => x.Item != null && x.SolarSystem != null)
-                    .Where(x => IsTextMatching(x, m_textFilter)).ToList();
+                var assets = m_list.Where(x => x.Item != null && x.SolarSystem != null).
+                    Where(x => IsTextMatching(x, m_textFilter)).ToList();
 
                 UpdateSort();
 

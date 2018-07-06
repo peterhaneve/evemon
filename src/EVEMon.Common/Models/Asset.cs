@@ -194,12 +194,11 @@ namespace EVEMon.Common.Models
         /// <returns></returns>
         public void UpdateLocation()
         {
-            string location = m_locationID.ToString(CultureConstants.InvariantCulture);
             // If location not already determined
-            if (m_locationID != 0L && (m_solarSystem == null || m_fullLocation.
-                IsEmptyOrUnknown()))
+            if (m_locationID != 0L && (m_solarSystem == null || m_solarSystem.ID == 0 ||
+                m_fullLocation.IsEmptyOrUnknown()))
             {
-                Station station = EveIDToStation.GetIDToStation(m_locationID, m_character);
+                var station = EveIDToStation.GetIDToStation(m_locationID, m_character);
                 if (station == null)
                 {
                     SolarSystem sys;
@@ -213,7 +212,7 @@ namespace EVEMon.Common.Models
                     else
                     {
                         // In an inaccessible citadel, or one that is not yet loaded
-                        m_solarSystem = null;
+                        m_solarSystem = new SolarSystem();
                         m_fullLocation = EveMonConstants.UnknownText;
                     }
                 }
@@ -223,7 +222,8 @@ namespace EVEMon.Common.Models
                     m_solarSystem = station.SolarSystem;
                     m_fullLocation = station.FullLocation;
                 }
-                Location = (station == null ? (m_solarSystem == null ? location :
+                string locationStr = m_locationID.ToString(CultureConstants.InvariantCulture);
+                Location = (station == null ? (m_solarSystem == null ? locationStr :
                     m_solarSystem.Name) : station.Name);
             }
         }
