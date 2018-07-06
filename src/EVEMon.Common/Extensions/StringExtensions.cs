@@ -103,6 +103,19 @@ namespace EVEMon.Common.Extensions
         }
 
         /// <summary>
+        /// Converts underscores to spaces, meant for getting around limitations on valid
+        /// identifiers for Enum names.
+        /// </summary>
+        /// <param name="text">The text to convert.</param>
+        /// <returns>The text with all "_" replaced with " ".</returns>
+        /// <exception cref="System.ArgumentNullException">text</exception>
+        public static string UnderscoresToSpaces(this string text)
+        {
+            text.ThrowIfNull(nameof(text));
+            return text.Replace('_', ' ');
+        }
+
+        /// <summary>
         /// Decodes the unicode characters.
         /// </summary>
         /// <param name="text">The text.</param>

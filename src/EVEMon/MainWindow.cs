@@ -1,5 +1,6 @@
 using EVEMon.About;
 using EVEMon.ApiCredentialsManagement;
+using EVEMon.BlankCharacter;
 using EVEMon.CharacterMonitoring;
 using EVEMon.CharactersComparison;
 using EVEMon.Common;
@@ -44,7 +45,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace EVEMon {
+namespace EVEMon
+{
     public sealed partial class MainWindow : EVEMonForm
     {
         #region Fields
@@ -156,7 +158,7 @@ namespace EVEMon {
             {
                 loadSettingsToolStripMenuItem, resetSettingsToolStripMenuItem,
                 saveSettingsToolStripMenuItem, exitToolStripMenuItem,
-                dataBrowserMenuItem,
+                dataBrowserMenuItem, blankCreatorToolStripMenuItem,
                 optionsToolStripMenuItem,
 
                 resetSettingsToolStripButton, exitToolStripButton, tsbOptions,
@@ -1678,6 +1680,20 @@ namespace EVEMon {
         private void charactersComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             WindowsFactory.ShowUnique<CharactersComparisonWindow>();
+        }
+
+        /// <summary>
+        /// Tools > Blank Character Creator...
+        /// Open the blank character creation window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void blankCreatorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (BlankCharacterWindow form = new BlankCharacterWindow())
+            {
+                form.ShowDialog(this);
+            }
         }
 
         /// <summary>

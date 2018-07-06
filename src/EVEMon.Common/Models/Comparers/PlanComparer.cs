@@ -48,9 +48,13 @@ namespace EVEMon.Common.Models.Comparers
             switch (Sort)
             {
                 case PlanSort.Description:
+                    if (x != null && y != null)
+                        return string.Compare(x.Description, y.Description,
+                            StringComparison.CurrentCulture);
+                    break;
                 case PlanSort.Name:
                     if (x != null && y != null)
-                        return String.Compare(x.Name, y.Name, StringComparison.CurrentCulture);
+                        return string.Compare(x.Name, y.Name, StringComparison.CurrentCulture);
                     break;
                 case PlanSort.Time:
                     if (x != null && y != null)

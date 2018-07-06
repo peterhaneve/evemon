@@ -122,6 +122,18 @@
     <Compile Include="ApiCredentialsManagement\EsiKeyUpdateOrAdditionWindow.Designer.cs">
       <DependentUpon>EsiKeyUpdateOrAdditionWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="BlankCharacter\BlankCharacterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BlankCharacter\BlankCharacterControl.Designer.cs">
+      <DependentUpon>BlankCharacterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BlankCharacter\BlankCharacterWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BlankCharacter\BlankCharacterWindow.Designer.cs">
+      <DependentUpon>BlankCharacterWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="CharacterMonitoring\AssetsColumnsSelectWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -521,6 +533,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ApiCredentialsManagement\CharacterImportationWindow.resx">
       <DependentUpon>CharacterImportationWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BlankCharacter\BlankCharacterControl.resx">
+      <DependentUpon>BlankCharacterControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BlankCharacter\BlankCharacterWindow.resx">
+      <DependentUpon>BlankCharacterWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CharacterMonitoring\CharacterAssetsList.resx">
       <DependentUpon>CharacterAssetsList.cs</DependentUpon>

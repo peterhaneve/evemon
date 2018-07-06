@@ -667,7 +667,7 @@ namespace EVEMon.Common.Models
             Birthday = serial.Birthday;
             Race = serial.Race.ToString().UnderscoresToDashes();
             Bloodline = serial.BloodLine.ToString().UnderscoresToDashes();
-            Ancestry = serial.Ancestry.ToString().Replace('_', ' ');
+            Ancestry = serial.Ancestry.ToString().UnderscoresToSpaces();
             Gender = serial.Gender.ToTitleCase();
             CorporationID = serial.CorporationID;
             AllianceID = serial.AllianceID;

@@ -536,7 +536,7 @@ namespace EVEMon.CharacterMonitoring
                     if (@group.Key is int) // Really ugly way but couldn't figured another way
                         groupText = @group.First().JumpsText;
                     else
-                        groupText = @group.Key.ToString();
+                        groupText = @group.Key?.ToString() ?? string.Empty;
 
                     ListViewGroup listGroup = new ListViewGroup(groupText);
                     listOfGroups.Add(listGroup);

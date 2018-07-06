@@ -78,29 +78,29 @@ namespace EVEMon.Common.Helpers
 
         private static readonly Dictionary<int, int> s_amarrRaceSkills = new Dictionary<int, int>
         {
-            { DBConstants.SmallEnergyTurretSkillID, 3 },
-            { DBConstants.AmarrFrigateSkillID, 3 },
+            { DBConstants.SmallEnergyTurretSkillID, 1 },
+            { DBConstants.AmarrFrigateSkillID, 1 },
             { DBConstants.AmarrIndustrialSkillID, 1 }
        };
 
         private static readonly Dictionary<int, int> s_caldariRaceSkills = new Dictionary<int, int>
         {
-            { DBConstants.SmallHybridTurretSkillID, 3 },
-            { DBConstants.CaldariFrigateSkillID, 3 },
+            { DBConstants.SmallHybridTurretSkillID, 1 },
+            { DBConstants.CaldariFrigateSkillID, 1 },
             { DBConstants.CaldariIndustrialSkillID, 1 }
         };
 
         private static readonly Dictionary<int, int> s_gallenteRaceSkills = new Dictionary<int, int>
         {
-            { DBConstants.SmallHybridTurretSkillID, 3 },
-            { DBConstants.GallenteFrigateSkillID, 3 },
+            { DBConstants.SmallHybridTurretSkillID, 1 },
+            { DBConstants.GallenteFrigateSkillID, 1 },
             { DBConstants.GallenteIndustrialSkillID, 1 }
         };
 
         private static readonly Dictionary<int, int> s_minmatarRaceSkills = new Dictionary<int, int>
         {
-            { DBConstants.SmallProjectileTurretSkillID, 3 },
-            { DBConstants.MinmatarFrigateSkillID, 3 },
+            { DBConstants.SmallProjectileTurretSkillID, 1 },
+            { DBConstants.MinmatarFrigateSkillID, 1 },
             { DBConstants.MinmatarIndustrialSkillID, 1 }
         };
 
