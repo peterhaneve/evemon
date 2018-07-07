@@ -428,8 +428,8 @@ namespace EVEMon.Common.Models
             // If location not already determined
             if (m_installedItemLocationID != 0L && (SolarSystem == null || SolarSystem.ID == 0))
             {
-                Station station = EveIDToStation.GetIDToStation(m_installedItemLocationID, character);
-
+                var station = EveIDToStation.GetIDToStation(m_installedItemLocationID,
+                    character);
                 if (station != null)
                     SolarSystem = station.SolarSystem;
                 else

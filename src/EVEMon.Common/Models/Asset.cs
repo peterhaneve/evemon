@@ -37,7 +37,7 @@ namespace EVEMon.Common.Models
             FlagID = (short)flagID;
             m_character = character;
             m_flag = EveFlag.GetFlagText(flagID);
-            TypeOfBlueprint = GetTypeOfBlueprint(src.RawQuantity);
+            TypeOfBlueprint = GetTypeOfBlueprint(src.IsBPC);
             Container = string.Empty;
             Volume = GetVolume();
             TotalVolume = Quantity * Volume;
@@ -174,11 +174,11 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the type of the blueprint.
         /// </summary>
-        /// <param name="rawQuantity">The raw quantity.</param>
+        /// <param name="isBPC">Whether ESI reported it as a BPC.</param>
         /// <returns></returns>
-        private string GetTypeOfBlueprint(int rawQuantity) => (Item != null &&
+        private string GetTypeOfBlueprint(bool isBPC) => (Item != null &&
             StaticBlueprints.GetBlueprintByID(Item.ID) != null && !Item.MarketGroup.BelongsIn(
-            DBConstants.AncientRelicsMarketGroupID)) ? (rawQuantity == -2 ?
+            DBConstants.AncientRelicsMarketGroupID)) ? (isBPC ?
             BlueprintType.Copy.ToString() : BlueprintType.Original.ToString()) : string.Empty;
 
         /// <summary>

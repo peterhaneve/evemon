@@ -379,8 +379,8 @@ namespace EVEMon.CharacterMonitoring
                     job.UpdateLocation(Character);
                     job.UpdateInstallation(Character);
 
-                    if (job.InstalledItem != null && job.OutputItem != null && IsTextMatching(
-                        job, m_textFilter))
+                    if (job.InstalledItem != null && job.OutputItem != null && job.
+                        SolarSystem != null && IsTextMatching(job, m_textFilter))
                     {
                         if ((!hideInactive || job.IsActive) && (!hideIssued || job.IssuedFor ==
                                 m_showIssuedFor))

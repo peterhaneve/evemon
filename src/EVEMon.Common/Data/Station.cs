@@ -12,6 +12,23 @@ namespace EVEMon.Common.Data
     /// </summary>
     public class Station : ReadonlyCollection<Agent>, IComparable<Station>
     {
+        /// <summary>
+        /// Creates a station modelling an inaccessible citadel with the given ID.
+        /// </summary>
+        /// <param name="id">The citadel ID that could not be accessed.</param>
+        /// <returns>A dummy station object that represents that structure.</returns>
+        public static Station CreateInaccessible(long id)
+        {
+            return new Station(new SerializableOutpost()
+            {
+                CorporationID = 0,
+                SolarSystemID = 0,
+                StationID = id,
+                StationName = "Inaccessible Structure",
+                StationTypeID = 35832 // Astrahus
+            });
+        }
+
         #region Constructor
 
         /// <summary>

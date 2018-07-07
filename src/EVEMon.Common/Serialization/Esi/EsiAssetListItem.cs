@@ -21,9 +21,9 @@ namespace EVEMon.Common.Serialization.Esi
         [DataMember(Name = "is_singleton")]
         public bool Singleton { get; set; }
 
-        [IgnoreDataMember]
-        public int RawQuantity => (Quantity > 0) ? Quantity : 1;
-
+        [DataMember(Name = "is_blueprint_copy", IsRequired = false, EmitDefaultValue = false)]
+        public bool IsBPC { get; set; }
+        
         // LocationID:
         // <60 000 000 = solar system in space
         // 60 014 861..60 014 928 = immensea

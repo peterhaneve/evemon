@@ -164,6 +164,7 @@ namespace EVEMon.Common.MarketPricer.EveMarketdata
             EveMonClient.Trace("begin");
             var url = new Uri(NetworkConstants.EVEMarketDataBaseUrl + NetworkConstants.
                 EVEMarketDataAPIItemPrices);
+            // This appears to be paginated, find out how to request more pages
             var result = await Util.DownloadXmlAsync<SerializableEMDItemPrices>(url,
                 new RequestParams()
                 {
