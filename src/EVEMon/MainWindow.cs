@@ -629,6 +629,7 @@ namespace EVEMon
                     tab => tab.character == e.Character).Select(character => character.tab))
             {
                 tcCharacterTabs.SelectedTab = tab;
+                UpdateControlsOnTabSelectionChange();
                 return;
             }
         }
