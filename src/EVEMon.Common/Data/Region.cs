@@ -1,5 +1,6 @@
 ﻿using System;
 using EVEMon.Common.Collections;
+using EVEMon.Common.Constants;
 using EVEMon.Common.Extensions;
 using EVEMon.Common.Serialization.Datafiles;
 
@@ -31,7 +32,7 @@ namespace EVEMon.Common.Data
         internal Region()
         {
             ID = 0;
-            Name = "unknown";
+            Name = EveMonConstants.UnknownText;
         }
         #endregion
 

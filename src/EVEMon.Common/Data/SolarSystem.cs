@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using EVEMon.Common.Collections;
+using EVEMon.Common.Constants;
 using EVEMon.Common.Enumerations;
 using EVEMon.Common.Extensions;
 using EVEMon.Common.Helpers;
@@ -70,7 +71,7 @@ namespace EVEMon.Common.Data
             ID = 0;
             Constellation = new Constellation();
             SecurityLevel = 0.0F;
-            FullLocation = "";
+            FullLocation = EveMonConstants.UnknownText;
         }
         #endregion
 

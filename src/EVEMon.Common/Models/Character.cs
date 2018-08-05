@@ -545,7 +545,7 @@ namespace EVEMon.Common.Models
             // In a station ?
             // Don't care if it's an outpost or regular station
             // as station name will be displayed in docking info
-            if (station != null)
+            if (station?.SolarSystem != null)
                 return $"{station.SolarSystem.FullLocation} ({station.SolarSystem.SecurityLevel:N1})";
 
             // Has to be in a solar system at least
