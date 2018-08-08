@@ -193,10 +193,9 @@ namespace EVEMon.Common.MarketPricer.EveMarketer
 
                 s_queryCounter++;
                 var result = await Util.DownloadXmlAsync<SerializableECItemPrices>(url,
-                    new RequestParams()
+                    new RequestParams(GetQueryString(idsToQuery))
                     {
-                        AcceptEncoded = true,
-                        Content = GetQueryString(idsToQuery)
+                        AcceptEncoded = true
                     });
                 OnPricesDownloaded(result);
             }
@@ -264,7 +263,7 @@ namespace EVEMon.Common.MarketPricer.EveMarketer
                 {
                     EveMonClient.Trace(result.Error.Message);
 
-                        // Abort further attempts
+                    // Abort further attempts
                     if (result.Error.Status == HttpWebClientServiceExceptionStatus.Timeout ||
                         result.Error.Status == HttpWebClientServiceExceptionStatus.ServerError)
                     {

@@ -5,6 +5,7 @@ using System.Text;
 using EVEMon.Common;
 using EVEMon.Common.Controls;
 using EVEMon.Common.SettingsObjects;
+using EVEMon.Common.Extensions;
 
 namespace EVEMon.ApiErrorHandling
 {
@@ -101,7 +102,7 @@ namespace EVEMon.ApiErrorHandling
                     if (Seconds % 60 == 0)
                     {
                         int minutes = Seconds / 60;
-                        builder.Append($"{minutes} Minute{(minutes == 1 ? String.Empty : "s")}");
+                        builder.Append($"{minutes} Minute{(minutes.S())}");
                     }
                     else
                         builder.Append($"{Seconds} Seconds");

@@ -10,8 +10,10 @@ namespace EVEMon.Common.Models
 {
     public sealed class Asset
     {
+        private static readonly EveProperty m_volumeProperty = StaticProperties.
+            GetPropertyByID(DBConstants.VolumePropertyID);
+
         private readonly CCPCharacter m_character;
-        private readonly EveProperty m_volumeProperty = StaticProperties.GetPropertyByID(DBConstants.VolumePropertyID);
         private long m_locationID;
         private string m_flag;
         private string m_fullLocation;
@@ -199,7 +201,9 @@ namespace EVEMon.Common.Models
                 m_fullLocation.IsEmptyOrUnknown()))
             {
                 var station = EveIDToStation.GetIDToStation(m_locationID, m_character);
-                if (station == null)
+                // If station is not known
+                if (station == null || station.SolarSystem == null || station.
+                    SolarSystem.ID == 0)
                 {
                     SolarSystem sys;
                     if (m_locationID < int.MaxValue && (sys = StaticGeography.
@@ -212,7 +216,7 @@ namespace EVEMon.Common.Models
                     else
                     {
                         // In an inaccessible citadel, or one that is not yet loaded
-                        m_solarSystem = new SolarSystem();
+                        m_solarSystem = SolarSystem.UNKNOWN;
                         m_fullLocation = EveMonConstants.UnknownText;
                     }
                 }

@@ -158,6 +158,7 @@
       <row refTypeID="1034" refTypeCode="StructureItemsDelivered" refTypeName="Items Delivered" subjectLayout="Items delivered" textLayout="{charID} has delivered the following items to {structureID} in {solarsystemID}:\n\n{listOfTypesAndQty}"/>
       <row refTypeID="1035" refTypeCode="NPCStandingsLost" refTypeName="NPC Standings Changed" subjectLayout="Standing changed" textLayout="{senderName} has changed standings towards you by {amount}"/>
       <row refTypeID="1036" refTypeCode="SeasonalChallengeCompleted" refTypeName="Agency Event Points Rewarded" subjectLayout="The Agency: {points_awarded} Points Achieved" textLayout=""/>
+      <row refTypeID="1037" refTypeCode="StructureOwnershipTransferred" refTypeName="Structure Transferred" subjectLayout="Ownership of {structureName} has been transferred" textLayout="Ownership of {structureName} has been transferred by {characterName} from {fromCorporationName} to {toCorporationName}."/>
     </rowset>
   </result>
   <cachedUntil></cachedUntil>

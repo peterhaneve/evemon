@@ -162,11 +162,11 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
             if (m_result == null)
                 m_result = new SerializableAPIResult<SerializableAPICredentials>();
 
+            if (!HasCredentialsStored)
+                return m_result;
             try
             {
-                if (!HasCredentialsStored)
-                    return m_result;
-
+                InitializeCertPinning();
                 using (DropboxClient client = GetClient())
                 {
                     await client.Users.GetCurrentAccountAsync().ConfigureAwait(false);
@@ -190,6 +190,10 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
             catch (Exception exc)
             {
                 m_result.Error = new SerializableAPIError { ErrorMessage = exc.Message };
+            }
+            finally
+            {
+                ClearCertPinning();
             }
 
             return m_result;
@@ -216,6 +220,7 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
                 CommitInfo commitInfo = new CommitInfo($"/{SettingsFileNameWithoutExtension}",
                     WriteMode.Overwrite.Instance);
 
+                InitializeCertPinning();
                 using (DropboxClient client = GetClient())
                 using (Stream stream = Util.GetMemoryStream(content))
                 {
@@ -241,6 +246,10 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
             {
                 result.Error = new SerializableAPIError { ErrorMessage = exc.Message };
             }
+            finally
+            {
+                ClearCertPinning();
+            }
 
             return result;
         }
@@ -255,6 +264,7 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
 
             try
             {
+                InitializeCertPinning();
                 DownloadArg arg = new DownloadArg($"/{SettingsFileNameWithoutExtension}");
                 using (DropboxClient client = GetClient())
                 {
@@ -281,6 +291,10 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
             {
                 result.Error = new SerializableAPIError { ErrorMessage = exc.Message };
             }
+            finally
+            {
+                ClearCertPinning();
+            }
 
             return result;
         }
@@ -301,6 +315,15 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
         }
 
         /// <summary>
+        /// De-initializes the cert pinning.
+        /// </summary>
+        private static void ClearCertPinning()
+        {
+            // Default value is null
+            ServicePointManager.ServerCertificateValidationCallback = null;
+        }
+
+        /// <summary>
         /// The Dropbox certificate validation callback.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -311,7 +334,13 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
         private static bool DropboxCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain,
             SslPolicyErrors sslpolicyerrors)
         {
-            X509ChainElement root = chain.ChainElements[chain.ChainElements.Count - 1];
+            // http://babbacom.com/?p=300 - fix security hole
+            if (sslpolicyerrors != SslPolicyErrors.None || chain == null)
+                return false;
+            int n = chain.ChainElements.Count;
+            if (n == 0)
+                return false;
+            X509ChainElement root = chain.ChainElements[n - 1];
             string publicKey = root.Certificate.GetPublicKeyString();
 
             return DropboxCertHelper.IsKnownRootCertPublicKey(publicKey);
@@ -323,8 +352,6 @@ namespace EVEMon.Common.CloudStorageServices.Dropbox
         /// <returns></returns>
         private static DropboxClient GetClient()
         {
-            InitializeCertPinning();
-
             return new DropboxClient(DropboxCloudStorageServiceSettings.Default.AccessToken,
                 userAgent: HttpWebClientServiceState.UserAgent);
         }

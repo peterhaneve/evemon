@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using StringIDInfo = EVEMon.Common.Service.IDInformation<string, string>;
+
 namespace EVEMon.Common.Service
 {
     public static class EveIDToName
@@ -19,8 +21,8 @@ namespace EVEMon.Common.Service
         private const string Filename = "EveIDToName";
 
         // Cache used to return all data, this is saved and loaded into the file
-        private static readonly Dictionary<long, string> s_cacheList =
-            new Dictionary<long, string>();
+        private static readonly Dictionary<long, StringIDInfo> s_cacheList =
+            new Dictionary<long, StringIDInfo>();
 
         // Provider for characters, corps, and alliances
         // Thank goodness for the consolidated names endpoint
@@ -103,10 +105,8 @@ namespace EVEMon.Common.Service
         /// <param name="entities">The entities.</param>
         private static void Import(IEnumerable<SerializableCharacterNameListItem> entities)
         {
-            foreach (SerializableCharacterNameListItem entity in entities)
-                // Add the query result to our cache list if it doesn't exist already
-                if (!s_cacheList.ContainsKey(entity.ID))
-                    s_cacheList.Add(entity.ID, entity.Name);
+            foreach (var entity in entities)
+                s_lookup.Prefill(entity.ID, entity.Name);
         }
 
         /// <summary>
@@ -148,7 +148,8 @@ namespace EVEMon.Common.Service
                     new SerializableEveIDToNameListItem
                     {
                         ID = item.Key,
-                        Name = item.Value,
+                        // Should never be null, but better than crashing...
+                        Name = item.Value?.Value ?? EveMonConstants.UnknownText,
                     }));
             }
 
@@ -162,27 +163,35 @@ namespace EVEMon.Common.Service
         /// Provides character, corp, or alliance ID to name conversion. Uses the combined
         /// names endpoint.
         /// </summary>
-        private class GenericIDToNameProvider : IDToObjectProvider<string, string>
+        private sealed class GenericIDToNameProvider : IDToObjectProvider<string, string>
         {
             // Only this many IDs can be requested in one attempt
             private const int MAX_IDS = 250;
 
-            public GenericIDToNameProvider(IDictionary<long, string> cacheList) :
+            public GenericIDToNameProvider(IDictionary<long, StringIDInfo> cacheList) :
                 base(cacheList) { }
+
+            protected override StringIDInfo CreateIDInfo(long id, string value)
+            {
+                return new GenericIDInformation(id, value);
+            }
 
             protected override void FetchIDs()
             {
                 var toDo = new LinkedList<long>();
+                StringIDInfo info;
                 lock (m_pendingIDs)
                 {
                     // Take up to MAX_IDS of them, in sorted order
                     var enumerator = m_pendingIDs.GetEnumerator();
                     for (int i = 0; i < MAX_IDS && enumerator.MoveNext(); i++)
                         toDo.AddLast(enumerator.Current.Key);
-                    // Add range to toDo list, subtract range from pending
-                    m_requested.AddRange(toDo);
                     foreach (long key in toDo)
+                    {
                         m_pendingIDs.Remove(key);
+                        m_cache.TryGetValue(key, out info);
+                        info?.OnRequestStart(null);
+                    }
                 }
                 string ids = "[ " + string.Join(",", toDo) + " ]";
                 // Given the number of IDs we are requesting, it is very unlikely that the
@@ -198,6 +207,7 @@ namespace EVEMon.Common.Service
             private void OnQueryAPICharacterNameUpdated(EsiResult<EsiAPICharacterNames> result,
                 object ignore)
             {
+                StringIDInfo info;
                 // Bail if there is an error
                 if (result.HasError)
                     EveMonClient.Notifications.NotifyCharacterNameError(result);
@@ -206,18 +216,14 @@ namespace EVEMon.Common.Service
                     EveMonClient.Notifications.InvalidateAPIError();
                     // This probably will never be false since we did not provide an etag
                     if (result.HasData)
-                        lock (s_cacheList)
+                        lock (m_cache)
                         {
                             // Add resulting names to the cache; duplicates should not occur,
                             // but guard against them defensively
                             foreach (var namePair in result.Result)
                             {
-                                long id = namePair.ID;
-                                if (s_cacheList.ContainsKey(id))
-                                    s_cacheList[id] = namePair.Name;
-                                else
-                                    s_cacheList.Add(id, namePair.Name);
-                                m_requested.Add(id);
+                                m_cache.TryGetValue(namePair.ID, out info);
+                                info?.OnRequestComplete(namePair.Name);
                             }
                         }
                 }
@@ -272,6 +278,51 @@ namespace EVEMon.Common.Service
             protected override void TriggerEvent() {
                 EveMonClient.OnEveIDToNameUpdated();
                 s_savePending = true;
+            }
+        }
+
+        /// <summary>
+        /// A simple implementation of IDInformation for maintaining ID state.
+        /// </summary>
+        private sealed class GenericIDInformation : IDInformation<string, string>
+        {
+            public long ID { get; }
+
+            public string Value { get; private set; }
+
+            /// <summary>
+            /// True if a request has been attempted, or false otherwise.
+            /// </summary>
+            private bool requested;
+
+            public GenericIDInformation(long id, string value)
+            {
+                ID = id;
+                Value = value;
+                requested = false;
+            }
+
+            public void OnRequestComplete(string result)
+            {
+                bool isBlank = string.IsNullOrWhiteSpace(result);
+                if (Value == null || !isBlank)
+                    // Avoid overwriting cached result with failed result
+                    Value = isBlank ? null : result;
+            }
+
+            public void OnRequestStart(string extra)
+            {
+                requested = true;
+            }
+
+            public bool RequestAttempted(string extra)
+            {
+                return requested;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("{0:D} => {1}", ID, Value);
             }
         }
     }

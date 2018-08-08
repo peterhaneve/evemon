@@ -15,9 +15,11 @@ namespace EVEMon.Common.Net
         {
             ServicePointManager.Expect100Continue = false;
             ServicePointManager.DefaultConnectionLimit = 10;
-
+#if false
+            // To debug trust failure issues
             if (EveMonClient.IsDebugBuild)
                 ServicePointManager.ServerCertificateValidationCallback = DummyCertificateValidationCallback;
+#endif
         }
 
         /// <summary>

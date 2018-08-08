@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EVEMon.Common.SettingsObjects;
+using EVEMon.Common.Data;
 
 namespace EVEMon.Common.Models.Comparers
 {
@@ -61,67 +62,70 @@ namespace EVEMon.Common.Models.Comparers
         /// </returns>
         private int CompareCore(Contract x, Contract y)
         {
+            Station xStart = x?.StartStation, yStart = y?.StartStation, xEnd = x?.EndStation,
+                yEnd = y?.EndStation;
             switch (m_column)
             {
-                case ContractColumn.Status:
-                    return x.Status.CompareTo(y.Status);
-                case ContractColumn.ContractText:
-                    return String.Compare(x.ContractText, y.ContractText, StringComparison.CurrentCulture);
-                case ContractColumn.ContractType:
-                    return x.ContractType.CompareTo(y.ContractType);
-                case ContractColumn.Issuer:
-                    return String.Compare(x.Issuer, y.Issuer, StringComparison.CurrentCulture);
-                case ContractColumn.Assignee:
-                    return String.Compare(x.Assignee, y.Assignee, StringComparison.CurrentCulture);
-                case ContractColumn.Issued:
-                    return x.Issued.CompareTo(y.Issued);
-                case ContractColumn.Expiration:
-                    return x.Expiration.CompareTo(y.Expiration);
-                case ContractColumn.Title:
-                    return String.Compare(x.Description, y.Description, StringComparison.CurrentCulture);
-                case ContractColumn.Acceptor:
-                    return String.Compare(x.Acceptor, y.Acceptor, StringComparison.CurrentCulture);
-                case ContractColumn.Availability:
-                    return x.Availability.CompareTo(y.Availability);
-                case ContractColumn.Price:
-                    return x.Price.CompareTo(y.Price);
-                case ContractColumn.Buyout:
-                    return x.Buyout.CompareTo(y.Buyout);
-                case ContractColumn.Reward:
-                    return x.Reward.CompareTo(y.Reward);
-                case ContractColumn.Collateral:
-                    return x.Collateral.CompareTo(y.Collateral);
-                case ContractColumn.Volume:
-                    return x.Volume.CompareTo(y.Volume);
-                case ContractColumn.StartLocation:
-                    return x.StartStation.CompareTo(y.StartStation);
-                case ContractColumn.StartRegion:
-                    return
-                        x.StartStation.SolarSystem.Constellation.Region.CompareTo(y.StartStation.SolarSystem.Constellation.Region);
-                case ContractColumn.StartSolarSystem:
-                    return x.StartStation.SolarSystem.CompareTo(y.StartStation.SolarSystem);
-                case ContractColumn.StartStation:
-                    return x.StartStation.CompareTo(y.StartStation);
-                case ContractColumn.EndLocation:
-                    return x.EndStation.CompareTo(y.EndStation);
-                case ContractColumn.EndRegion:
-                    return x.EndStation.SolarSystem.Constellation.Region.CompareTo(y.EndStation.SolarSystem.Constellation.Region);
-                case ContractColumn.EndSolarSystem:
-                    return x.EndStation.SolarSystem.CompareTo(y.EndStation.SolarSystem);
-                case ContractColumn.EndStation:
-                    return x.EndStation.CompareTo(y.EndStation);
-                case ContractColumn.Accepted:
-                    return x.Accepted.CompareTo(y.Accepted);
-                case ContractColumn.Completed:
-                    return x.Completed.CompareTo(y.Completed);
-                case ContractColumn.Duration:
-                    return x.Duration.CompareTo(y.Duration);
-                case ContractColumn.DaysToComplete:
-                    return x.DaysToComplete.CompareTo(y.DaysToComplete);
-                case ContractColumn.IssuedFor:
-                    return x.IssuedFor.CompareTo(y.IssuedFor);
-                default:
-                    return 0;
+            case ContractColumn.Status:
+                return x.Status.CompareTo(y.Status);
+            case ContractColumn.ContractText:
+                return String.Compare(x.ContractText, y.ContractText, StringComparison.CurrentCulture);
+            case ContractColumn.ContractType:
+                return x.ContractType.CompareTo(y.ContractType);
+            case ContractColumn.Issuer:
+                return String.Compare(x.Issuer, y.Issuer, StringComparison.CurrentCulture);
+            case ContractColumn.Assignee:
+                return String.Compare(x.Assignee, y.Assignee, StringComparison.CurrentCulture);
+            case ContractColumn.Issued:
+                return x.Issued.CompareTo(y.Issued);
+            case ContractColumn.Expiration:
+                return x.Expiration.CompareTo(y.Expiration);
+            case ContractColumn.Title:
+                return String.Compare(x.Description, y.Description, StringComparison.CurrentCulture);
+            case ContractColumn.Acceptor:
+                return String.Compare(x.Acceptor, y.Acceptor, StringComparison.CurrentCulture);
+            case ContractColumn.Availability:
+                return x.Availability.CompareTo(y.Availability);
+            case ContractColumn.Price:
+                return x.Price.CompareTo(y.Price);
+            case ContractColumn.Buyout:
+                return x.Buyout.CompareTo(y.Buyout);
+            case ContractColumn.Reward:
+                return x.Reward.CompareTo(y.Reward);
+            case ContractColumn.Collateral:
+                return x.Collateral.CompareTo(y.Collateral);
+            case ContractColumn.Volume:
+                return x.Volume.CompareTo(y.Volume);
+            case ContractColumn.StartLocation:
+                return xStart.CompareTo(yStart);
+            case ContractColumn.StartRegion:
+                return xStart.SolarSystemChecked.Constellation.Region.CompareTo(yStart.
+                    SolarSystemChecked.Constellation.Region);
+            case ContractColumn.StartSolarSystem:
+                return xStart.SolarSystemChecked.CompareTo(yStart.SolarSystemChecked);
+            case ContractColumn.StartStation:
+                return xStart.CompareTo(yStart);
+            case ContractColumn.EndLocation:
+                return xEnd.CompareTo(yEnd);
+            case ContractColumn.EndRegion:
+                return xEnd.SolarSystemChecked.Constellation.Region.CompareTo(yEnd.
+                    SolarSystemChecked.Constellation.Region);
+            case ContractColumn.EndSolarSystem:
+                return xEnd.SolarSystemChecked.CompareTo(yEnd.SolarSystemChecked);
+            case ContractColumn.EndStation:
+                return xEnd.CompareTo(yEnd);
+            case ContractColumn.Accepted:
+                return x.Accepted.CompareTo(y.Accepted);
+            case ContractColumn.Completed:
+                return x.Completed.CompareTo(y.Completed);
+            case ContractColumn.Duration:
+                return x.Duration.CompareTo(y.Duration);
+            case ContractColumn.DaysToComplete:
+                return x.DaysToComplete.CompareTo(y.DaysToComplete);
+            case ContractColumn.IssuedFor:
+                return x.IssuedFor.CompareTo(y.IssuedFor);
+            default:
+                return 0;
             }
         }
     }

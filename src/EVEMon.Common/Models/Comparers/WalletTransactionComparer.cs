@@ -60,32 +60,34 @@ namespace EVEMon.Common.Models.Comparers
         {
             switch (m_column)
             {
-                case WalletTransactionColumn.Date:
-                    return x.Date.CompareTo(y.Date);
-                case WalletTransactionColumn.ItemName:
-                    return String.Compare(x.ItemName, y.ItemName, StringComparison.CurrentCulture);
-                case WalletTransactionColumn.Price:
-                    return x.Price.CompareTo(y.Price);
-                case WalletTransactionColumn.Quantity:
-                    return x.Quantity.CompareTo(y.Quantity);
-                case WalletTransactionColumn.Credit:
-                    return x.Credit.CompareTo(y.Credit);
-                case WalletTransactionColumn.Client:
-                    return String.Compare(x.ClientName, y.ClientName, StringComparison.CurrentCulture);
-                case WalletTransactionColumn.Location:
-                    return x.Station.CompareTo(y.Station);
-                case WalletTransactionColumn.Region:
-                    return x.Station.SolarSystem.Constellation.Region.CompareTo(y.Station.SolarSystem.Constellation.Region);
-                case WalletTransactionColumn.SolarSystem:
-                    return x.Station.SolarSystem.CompareTo(y.Station.SolarSystem);
-                case WalletTransactionColumn.Station:
-                    return x.Station.CompareTo(y.Station);
-                case WalletTransactionColumn.TransactionFor:
-                    return x.TransactionFor.CompareTo(y.TransactionFor);
-                case WalletTransactionColumn.JournalID:
-                    return x.JournalID.CompareTo(y.JournalID);
-                default:
-                    return 0;
+            case WalletTransactionColumn.Date:
+                return x.Date.CompareTo(y.Date);
+            case WalletTransactionColumn.ItemName:
+                return string.Compare(x.ItemName, y.ItemName, StringComparison.CurrentCulture);
+            case WalletTransactionColumn.Price:
+                return x.Price.CompareTo(y.Price);
+            case WalletTransactionColumn.Quantity:
+                return x.Quantity.CompareTo(y.Quantity);
+            case WalletTransactionColumn.Credit:
+                return x.Credit.CompareTo(y.Credit);
+            case WalletTransactionColumn.Client:
+                return string.Compare(x.ClientName, y.ClientName,
+                    StringComparison.CurrentCulture);
+            case WalletTransactionColumn.Location:
+                return x.Station.CompareTo(y.Station);
+            case WalletTransactionColumn.Region:
+                return x.Station.SolarSystemChecked.Constellation.Region.CompareTo(y.
+                    Station.SolarSystemChecked.Constellation.Region);
+            case WalletTransactionColumn.SolarSystem:
+                return x.Station.SolarSystemChecked.CompareTo(y.Station.SolarSystemChecked);
+            case WalletTransactionColumn.Station:
+                return x.Station.CompareTo(y.Station);
+            case WalletTransactionColumn.TransactionFor:
+                return x.TransactionFor.CompareTo(y.TransactionFor);
+            case WalletTransactionColumn.JournalID:
+                return x.JournalID.CompareTo(y.JournalID);
+            default:
+                return 0;
             }
         }
     }

@@ -284,32 +284,30 @@ namespace EVEMon.CharacterMonitoring
             int scrollBarPosition = lvResearchPoints.GetVerticalScrollBarPosition();
 
             // Store the selected item (if any) to restore it after the update
-            int selectedItem = lvResearchPoints.SelectedItems.Count > 0
-                ? lvResearchPoints.SelectedItems[0].Tag.GetHashCode()
-                : 0;
+            int selectedItem = lvResearchPoints.SelectedItems.Count > 0 ?
+                lvResearchPoints.SelectedItems[0].Tag.GetHashCode() : 0;
 
             lvResearchPoints.BeginUpdate();
             try
             {
-                IEnumerable<ResearchPoint> researhPoints = m_list
-                    .Where(x => !String.IsNullOrEmpty(x.AgentName) && !String.IsNullOrEmpty(x.Field) && x.Station != null)
-                    .Where(x => IsTextMatching(x, m_textFilter));
+                IEnumerable<ResearchPoint> researchPoints = m_list.Where(x => !string.
+                    IsNullOrEmpty(x.AgentName) && !string.IsNullOrEmpty(x.Field) &&
+                    x.Station != null).Where(x => IsTextMatching(x, m_textFilter));
 
                 UpdateSort();
 
                 lvResearchPoints.Items.Clear();
 
                 // Add the items
-                lvResearchPoints.Items.AddRange(
-                    researhPoints.Select(researchPoint => new
-                                                              {
-                                                                  researchPoint,
-                                                                  item = new ListViewItem(researchPoint.AgentName)
-                                                                             {
-                                                                                 UseItemStyleForSubItems = false,
-                                                                                 Tag = researchPoint
-                                                                             }
-                                                              }).Select(x => CreateSubItems(x.researchPoint, x.item)).ToArray());
+                lvResearchPoints.Items.AddRange(researchPoints.Select(researchPoint => new
+                {
+                    researchPoint,
+                    item = new ListViewItem(researchPoint.AgentName)
+                    {
+                        UseItemStyleForSubItems = false,
+                        Tag = researchPoint
+                    }
+                }).Select(x => CreateSubItems(x.researchPoint, x.item)).ToArray());
 
                 // Restore the selected item (if any)
                 if (selectedItem > 0)
@@ -439,43 +437,44 @@ namespace EVEMon.CharacterMonitoring
         /// <param name="column"></param>
         private static void SetColumn(ResearchPoint researchPoint, ListViewItem.ListViewSubItem item, ResearchColumn column)
         {
+            var station = researchPoint.Station;
             switch (column)
             {
-                case ResearchColumn.Agent:
-                    item.Text = researchPoint.AgentName;
-                    break;
-                case ResearchColumn.Level:
-                    item.Text = researchPoint.AgentLevel.ToString(CultureConstants.DefaultCulture);
-                    break;
-                case ResearchColumn.Field:
-                    item.Text = researchPoint.Field;
-                    break;
-                case ResearchColumn.CurrentRP:
-                    item.Text = researchPoint.CurrentRP.ToNumericString(2);
-                    break;
-                case ResearchColumn.PointsPerDay:
-                    item.Text = researchPoint.PointsPerDay.ToNumericString(2);
-                    break;
-                case ResearchColumn.StartDate:
-                    item.Text = $"{researchPoint.StartDate.ToLocalTime()}";
-                    break;
-                case ResearchColumn.Location:
-                    item.Text = researchPoint.Station.FullLocation;
-                    break;
-                case ResearchColumn.Region:
-                    item.Text = researchPoint.Station.SolarSystem.Constellation.Region.Name;
-                    break;
-                case ResearchColumn.SolarSystem:
-                    item.Text = researchPoint.Station.SolarSystem.Name;
-                    item.ForeColor = researchPoint.Station.SolarSystem.SecurityLevelColor;
-                    break;
-                case ResearchColumn.Station:
-                    item.Text = researchPoint.Station.Name;
-                    break;
-                case ResearchColumn.Quality:
-                    break;
-                default:
-                    throw new NotImplementedException();
+            case ResearchColumn.Agent:
+                item.Text = researchPoint.AgentName;
+                break;
+            case ResearchColumn.Level:
+                item.Text = researchPoint.AgentLevel.ToString(CultureConstants.DefaultCulture);
+                break;
+            case ResearchColumn.Field:
+                item.Text = researchPoint.Field;
+                break;
+            case ResearchColumn.CurrentRP:
+                item.Text = researchPoint.CurrentRP.ToNumericString(2);
+                break;
+            case ResearchColumn.PointsPerDay:
+                item.Text = researchPoint.PointsPerDay.ToNumericString(2);
+                break;
+            case ResearchColumn.StartDate:
+                item.Text = researchPoint.StartDate.ToLocalTime().ToString("G");
+                break;
+            case ResearchColumn.Location:
+                item.Text = station.FullLocation;
+                break;
+            case ResearchColumn.Region:
+                item.Text = station.SolarSystemChecked.Constellation.Region.Name;
+                break;
+            case ResearchColumn.SolarSystem:
+                item.Text = station.SolarSystem?.Name ?? EveMonConstants.UnknownText;
+                item.ForeColor = station.SolarSystemChecked.SecurityLevelColor;
+                break;
+            case ResearchColumn.Station:
+                item.Text = station.Name;
+                break;
+            case ResearchColumn.Quality:
+                break;
+            default:
+                throw new NotImplementedException();
             }
         }
 
@@ -493,12 +492,12 @@ namespace EVEMon.CharacterMonitoring
         /// 	<c>true</c> if [is text matching] [the specified x]; otherwise, <c>false</c>.
         /// </returns>
         private static bool IsTextMatching(ResearchPoint x, string text) => String.IsNullOrEmpty(text)
-       || x.AgentName.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Field.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.SolarSystem.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.SolarSystem.Constellation.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.SolarSystem.Constellation.Region.Name.ToUpperInvariant().Contains(text, ignoreCase: true);
+            || x.AgentName.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Field.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.SolarSystemChecked.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.SolarSystemChecked.Constellation.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.SolarSystemChecked.Constellation.Region.Name.ToUpperInvariant().Contains(text, ignoreCase: true);
 
         #endregion
 

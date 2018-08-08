@@ -546,6 +546,17 @@ namespace EVEMon.CharacterMonitoring
         }
 
         /// <summary>
+        /// Formats the price according to the settings.
+        /// </summary>
+        /// <param name="price">The price to display.</param>
+        /// <returns>The price as a string.</returns>
+        private static string FormatPrice(decimal price)
+        {
+            return FormatHelper.FormatIf(Settings.UI.MainWindow.WalletTransactions.
+                NumberAbsFormat, 2, price, AbbreviationFormat.AbbreviationSymbols);
+        }
+
+        /// <summary>
         /// Updates the listview sub-item.
         /// </summary>
         /// <param name="walletTransaction"></param>
@@ -554,56 +565,55 @@ namespace EVEMon.CharacterMonitoring
         private static void SetColumn(WalletTransaction walletTransaction, ListViewItem.ListViewSubItem item,
                                       WalletTransactionColumn column)
         {
-            bool numberFormat = Settings.UI.MainWindow.WalletTransactions.NumberAbsFormat;
-
             switch (column)
             {
-                case WalletTransactionColumn.Date:
-                    item.Text = $"{walletTransaction.Date.ToLocalTime():G}";
-                    break;
-                case WalletTransactionColumn.ItemName:
-                    item.Text = walletTransaction.ItemName;
-                    break;
-                case WalletTransactionColumn.Price:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(walletTransaction.Price, AbbreviationFormat.AbbreviationSymbols)
-                        : walletTransaction.Price.ToNumericString(2);
-                    break;
-                case WalletTransactionColumn.Quantity:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(walletTransaction.Quantity, AbbreviationFormat.AbbreviationSymbols)
-                        : walletTransaction.Quantity.ToNumericString(0);
-                    break;
-                case WalletTransactionColumn.Credit:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(walletTransaction.Credit, AbbreviationFormat.AbbreviationSymbols)
-                        : walletTransaction.Credit.ToNumericString(2);
-                    item.ForeColor = walletTransaction.TransactionType == TransactionType.Buy ? Color.DarkRed : Color.DarkGreen;
-                    break;
-                case WalletTransactionColumn.Client:
-                    item.Text = walletTransaction.ClientName;
-                    break;
-                case WalletTransactionColumn.Location:
-                    item.Text = walletTransaction.Station.FullLocation;
-                    break;
-                case WalletTransactionColumn.Region:
-                    item.Text = walletTransaction.Station.SolarSystem.Constellation.Region.Name;
-                    break;
-                case WalletTransactionColumn.SolarSystem:
-                    item.Text = walletTransaction.Station.SolarSystem.Name;
-                    item.ForeColor = walletTransaction.Station.SolarSystem.SecurityLevelColor;
-                    break;
-                case WalletTransactionColumn.Station:
-                    item.Text = walletTransaction.Station.Name;
-                    break;
-                case WalletTransactionColumn.TransactionFor:
-                    item.Text = walletTransaction.TransactionFor.ToString();
-                    break;
-                case WalletTransactionColumn.JournalID:
-                    item.Text = walletTransaction.JournalID.ToString(CultureConstants.DefaultCulture);
-                    break;
-                default:
-                    throw new NotImplementedException();
+            case WalletTransactionColumn.Date:
+                item.Text = walletTransaction.Date.ToLocalTime().ToString("G");
+                break;
+            case WalletTransactionColumn.ItemName:
+                item.Text = walletTransaction.ItemName;
+                break;
+            case WalletTransactionColumn.Price:
+                item.Text = FormatPrice(walletTransaction.Price);
+                break;
+            case WalletTransactionColumn.Quantity:
+                item.Text = FormatHelper.FormatIf(Settings.UI.MainWindow.WalletTransactions.
+                    NumberAbsFormat, walletTransaction.Quantity, AbbreviationFormat.
+                    AbbreviationSymbols);
+                break;
+            case WalletTransactionColumn.Credit:
+                item.Text = FormatPrice(walletTransaction.Credit);
+                item.ForeColor = walletTransaction.TransactionType == TransactionType.Buy ?
+                    Color.DarkRed : Color.DarkGreen;
+                break;
+            case WalletTransactionColumn.Client:
+                item.Text = walletTransaction.ClientName;
+                break;
+            case WalletTransactionColumn.Location:
+                item.Text = walletTransaction.Station.FullLocation;
+                break;
+            case WalletTransactionColumn.Region:
+                item.Text = walletTransaction.Station.SolarSystemChecked.Constellation.
+                    Region.Name;
+                break;
+            case WalletTransactionColumn.SolarSystem:
+                item.Text = walletTransaction.Station.SolarSystem?.Name ??
+                    EveMonConstants.UnknownText;
+                item.ForeColor = walletTransaction.Station.SolarSystemChecked.
+                    SecurityLevelColor;
+                break;
+            case WalletTransactionColumn.Station:
+                item.Text = walletTransaction.Station.Name;
+                break;
+            case WalletTransactionColumn.TransactionFor:
+                item.Text = walletTransaction.TransactionFor.ToString();
+                break;
+            case WalletTransactionColumn.JournalID:
+                item.Text = walletTransaction.JournalID.ToString(CultureConstants.
+                    DefaultCulture);
+                break;
+            default:
+                throw new NotImplementedException();
             }
         }
 
@@ -621,12 +631,12 @@ namespace EVEMon.CharacterMonitoring
         /// 	<c>true</c> if [is text matching] [the specified x]; otherwise, <c>false</c>.
         /// </returns>
         private static bool IsTextMatching(WalletTransaction x, string text) => String.IsNullOrEmpty(text)
-       || x.ItemName.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.ClientName.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.SolarSystem.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.SolarSystem.Constellation.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
-       || x.Station.SolarSystem.Constellation.Region.Name.ToUpperInvariant().Contains(text, ignoreCase: true);
+            || x.ItemName.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.ClientName.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.SolarSystemChecked.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.SolarSystemChecked.Constellation.Name.ToUpperInvariant().Contains(text, ignoreCase: true)
+            || x.Station.SolarSystemChecked.Constellation.Region.Name.ToUpperInvariant().Contains(text, ignoreCase: true);
 
         #endregion
 

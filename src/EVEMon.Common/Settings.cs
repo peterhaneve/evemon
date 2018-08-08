@@ -402,7 +402,7 @@ namespace EVEMon.Common
             // which cloud storage service provider should be used
             s_settings = TryDeserializeFromFile();
 
-            // Try to download the seetings file from the cloud
+            // Try to download the settings file from the cloud
             CloudStorageServiceAPIFile settingsFile = s_settings?.CloudStorageServiceProvider?.Provider?.DownloadSettingsFile();
 
             // If a settings file was downloaded try to deserialize it

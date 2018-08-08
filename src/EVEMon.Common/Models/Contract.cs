@@ -236,7 +236,13 @@ namespace EVEMon.Common.Models
             get
             {
                 if (ContractType == ContractType.Courier)
-                    return $"{StartStation.SolarSystem.Name} >> {EndStation.SolarSystem.Name} ({Math.Round(Volume)} m³)";
+                {
+                    string startName = StartStation.SolarSystemChecked?.Name ??
+                        EveMonConstants.UnknownText;
+                    string endName = EndStation.SolarSystemChecked?.Name ??
+                        EveMonConstants.UnknownText;
+                    return $"{startName} >> {endName} ({Math.Round(Volume)} m³)";
+                }
 
                 if (!m_contractItems.Any() || !ContractItems.Any())
                     return EveMonConstants.UnknownText;
@@ -250,8 +256,8 @@ namespace EVEMon.Common.Models
                 if (IsBuyOnly)
                     return Reward == 0 ? "[Want A Gift]" : "[Want To Buy]";
 
-                return $"{m_contractItems.First().Item.Name}" +
-                       $"{(m_contractItems.First().Quantity > 1 ? $" x {m_contractItems.First().Quantity}" : String.Empty)}";
+                return m_contractItems.First().Item.Name + ((m_contractItems.First().
+                    Quantity > 1) ? $" x {m_contractItems.First().Quantity}" : string.Empty);
             }
         }
 

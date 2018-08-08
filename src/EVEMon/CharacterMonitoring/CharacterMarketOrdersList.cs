@@ -573,9 +573,9 @@ namespace EVEMon.CharacterMonitoring
                 .AppendLine()
                 .Append($"Issued: {order.Issued.ToLocalTime()}")
                 .AppendLine()
-                .Append($"Duration: {order.Duration} Day{(order.Duration > 1 ? "s" : String.Empty)}")
+                .Append($"Duration: {order.Duration} Day{(order.Duration.S())}")
                 .AppendLine()
-                .Append($"Solar System: {order.Station.SolarSystem.FullLocation}")
+                .Append($"Solar System: {order.Station.SolarSystem?.FullLocation ?? EveMonConstants.UnknownText}")
                 .AppendLine()
                 .Append($"Station: {order.Station.Name}")
                 .AppendLine();
@@ -649,6 +649,28 @@ namespace EVEMon.CharacterMonitoring
         }
 
         /// <summary>
+        /// Formats the price according to the settings.
+        /// </summary>
+        /// <param name="price">The price to display.</param>
+        /// <returns>The price as a string.</returns>
+        private static string FormatPrice(decimal price)
+        {
+            return FormatHelper.FormatIf(Settings.UI.MainWindow.MarketOrders.NumberAbsFormat,
+                2, price, AbbreviationFormat.AbbreviationSymbols);
+        }
+
+        /// <summary>
+        /// Formats the quantity according to the settings.
+        /// </summary>
+        /// <param name="price">The quantity to display.</param>
+        /// <returns>The quantity as a string.</returns>
+        private static string FormatQuantity(long qty)
+        {
+            return FormatHelper.FormatIf(Settings.UI.MainWindow.MarketOrders.NumberAbsFormat,
+                qty, AbbreviationFormat.AbbreviationSymbols);
+        }
+
+        /// <summary>
         /// Updates the listview sub-item.
         /// </summary>
         /// <param name="order"></param>
@@ -656,99 +678,81 @@ namespace EVEMon.CharacterMonitoring
         /// <param name="column"></param>
         private static void SetColumn(MarketOrder order, ListViewItem.ListViewSubItem item, MarketOrderColumn column)
         {
-            bool numberFormat = Settings.UI.MainWindow.MarketOrders.NumberAbsFormat;
-
             BuyOrder buyOrder = order as BuyOrder;
 
             switch (column)
             {
-                case MarketOrderColumn.Duration:
-                    item.Text = $"{order.Duration} Day{(order.Duration > 1 ? "s" : String.Empty)}";
-                    break;
-                case MarketOrderColumn.Expiration:
-                    ListViewItemFormat format = FormatExpiration(order);
-                    item.Text = format.Text;
-                    item.ForeColor = format.TextColor;
-                    break;
-                case MarketOrderColumn.InitialVolume:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(order.InitialVolume, AbbreviationFormat.AbbreviationSymbols)
-                        : order.InitialVolume.ToNumericString(0);
-                    break;
-                case MarketOrderColumn.Issued:
-                    item.Text = order.Issued.ToLocalTime().ToShortDateString();
-                    break;
-                case MarketOrderColumn.IssuedFor:
-                    item.Text = order.IssuedFor.ToString();
-                    break;
-                case MarketOrderColumn.Item:
-                    item.Text = order.Item.ToString();
-                    break;
-                case MarketOrderColumn.ItemType:
-                    item.Text = order.Item.MarketGroup.Name;
-                    break;
-                case MarketOrderColumn.Location:
-                    item.Text = order.Station.FullLocation;
-                    break;
-                case MarketOrderColumn.MinimumVolume:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(order.MinVolume, AbbreviationFormat.AbbreviationSymbols)
-                        : order.MinVolume.ToNumericString(0);
-                    break;
-                case MarketOrderColumn.Region:
-                    item.Text = order.Station.SolarSystem.Constellation.Region.Name;
-                    break;
-                case MarketOrderColumn.RemainingVolume:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(order.RemainingVolume, AbbreviationFormat.AbbreviationSymbols)
-                        : order.RemainingVolume.ToNumericString(0);
-                    break;
-                case MarketOrderColumn.SolarSystem:
-                    item.Text = order.Station.SolarSystem.Name;
-                    item.ForeColor = order.Station.SolarSystem.SecurityLevelColor;
-                    break;
-                case MarketOrderColumn.Station:
-                    item.Text = order.Station.Name;
-                    break;
-                case MarketOrderColumn.TotalPrice:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(order.TotalPrice, AbbreviationFormat.AbbreviationSymbols)
-                        : order.TotalPrice.ToNumericString(2);
-                    item.ForeColor = buyOrder != null ? Color.DarkRed : Color.DarkGreen;
-                    break;
-                case MarketOrderColumn.UnitaryPrice:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(order.UnitaryPrice, AbbreviationFormat.AbbreviationSymbols)
-                        : order.UnitaryPrice.ToNumericString(2);
-                    item.ForeColor = buyOrder != null ? Color.DarkRed : Color.DarkGreen;
-                    break;
-                case MarketOrderColumn.Volume:
-                    string remainingVolumeText = numberFormat
-                        ? FormatHelper.Format(order.RemainingVolume, AbbreviationFormat.AbbreviationSymbols)
-                        : order.RemainingVolume.ToNumericString(0);
-                    string initialVolumeText = numberFormat
-                        ? FormatHelper.Format(order.InitialVolume, AbbreviationFormat.AbbreviationSymbols)
-                        : order.InitialVolume.ToNumericString(0);
-                    item.Text = $"{remainingVolumeText} / {initialVolumeText}";
-                    break;
-                case MarketOrderColumn.LastStateChange:
-                    item.Text = order.LastStateChange.ToLocalTime().ToShortDateString();
-                    break;
-                case MarketOrderColumn.OrderRange:
-                    if (buyOrder != null)
-                        item.Text = buyOrder.RangeDescription;
-                    break;
-                case MarketOrderColumn.Escrow:
-                    if (buyOrder != null)
-                    {
-                        item.Text = numberFormat
-                            ? FormatHelper.Format(buyOrder.Escrow, AbbreviationFormat.AbbreviationSymbols)
-                            : buyOrder.Escrow.ToNumericString(2);
-                        item.ForeColor = Color.DarkBlue;
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
+            case MarketOrderColumn.Duration:
+                item.Text = $"{order.Duration} Day{(order.Duration.S())}";
+                break;
+            case MarketOrderColumn.Expiration:
+                ListViewItemFormat format = FormatExpiration(order);
+                item.Text = format.Text;
+                item.ForeColor = format.TextColor;
+                break;
+            case MarketOrderColumn.InitialVolume:
+                item.Text = FormatQuantity(order.InitialVolume);
+                break;
+            case MarketOrderColumn.Issued:
+                item.Text = order.Issued.ToLocalTime().ToShortDateString();
+                break;
+            case MarketOrderColumn.IssuedFor:
+                item.Text = order.IssuedFor.ToString();
+                break;
+            case MarketOrderColumn.Item:
+                item.Text = order.Item.ToString();
+                break;
+            case MarketOrderColumn.ItemType:
+                item.Text = order.Item.MarketGroup.Name;
+                break;
+            case MarketOrderColumn.Location:
+                item.Text = order.Station.FullLocation;
+                break;
+            case MarketOrderColumn.MinimumVolume:
+                item.Text = FormatQuantity(order.MinVolume);
+                break;
+            case MarketOrderColumn.Region:
+                item.Text = order.Station.SolarSystemChecked.Constellation.Region.Name;
+                break;
+            case MarketOrderColumn.RemainingVolume:
+                item.Text = FormatQuantity(order.RemainingVolume);
+                break;
+            case MarketOrderColumn.SolarSystem:
+                item.Text = order.Station.SolarSystem?.Name ?? EveMonConstants.UnknownText;
+                item.ForeColor = order.Station.SolarSystemChecked.SecurityLevelColor;
+                break;
+            case MarketOrderColumn.Station:
+                item.Text = order.Station.Name;
+                break;
+            case MarketOrderColumn.TotalPrice:
+                item.Text = FormatPrice(order.TotalPrice);
+                item.ForeColor = buyOrder != null ? Color.DarkRed : Color.DarkGreen;
+                break;
+            case MarketOrderColumn.UnitaryPrice:
+                item.Text = FormatPrice(order.UnitaryPrice);
+                item.ForeColor = buyOrder != null ? Color.DarkRed : Color.DarkGreen;
+                break;
+            case MarketOrderColumn.Volume:
+                string remainingVolumeText = FormatQuantity(order.RemainingVolume);
+                string initialVolumeText = FormatQuantity(order.InitialVolume);
+                item.Text = $"{remainingVolumeText} / {initialVolumeText}";
+                break;
+            case MarketOrderColumn.LastStateChange:
+                item.Text = order.LastStateChange.ToLocalTime().ToShortDateString();
+                break;
+            case MarketOrderColumn.OrderRange:
+                if (buyOrder != null)
+                    item.Text = buyOrder.RangeDescription;
+                break;
+            case MarketOrderColumn.Escrow:
+                if (buyOrder != null)
+                {
+                    item.Text = FormatPrice(buyOrder.Escrow);
+                    item.ForeColor = Color.DarkBlue;
+                }
+                break;
+            default:
+                throw new NotImplementedException();
             }
         }
 
@@ -768,9 +772,9 @@ namespace EVEMon.CharacterMonitoring
                x.Item.Name.Contains(text, ignoreCase: true) ||
                x.Item.Description.Contains(text, ignoreCase: true) ||
                x.Station.Name.Contains(text, ignoreCase: true) ||
-               x.Station.SolarSystem.Name.Contains(text, ignoreCase: true) ||
-               x.Station.SolarSystem.Constellation.Name.Contains(text, ignoreCase: true) ||
-               x.Station.SolarSystem.Constellation.Region.Name.Contains(text, ignoreCase: true);
+               x.Station.SolarSystemChecked.Name.Contains(text, ignoreCase: true) ||
+               x.Station.SolarSystemChecked.Constellation.Name.Contains(text, ignoreCase: true) ||
+               x.Station.SolarSystemChecked.Constellation.Region.Name.Contains(text, ignoreCase: true);
 
         /// <summary>
         /// Gets the text and formatting for the expiration cell

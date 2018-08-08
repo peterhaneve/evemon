@@ -540,16 +540,7 @@ namespace EVEMon.Common.Models
                 return EveMonConstants.UnknownText;
 
             // Check if in an NPC station or in an outpost
-            Station station = LastKnownStation;
-
-            // In a station ?
-            // Don't care if it's an outpost or regular station
-            // as station name will be displayed in docking info
-            if (station != null)
-                return $"{station.SolarSystem.FullLocation} ({station.SolarSystem.SecurityLevel:N1})";
-
-            // Has to be in a solar system at least
-            SolarSystem system = LastKnownSolarSystem;
+            var system = (LastKnownStation?.SolarSystem) ?? LastKnownSolarSystem;
 
             // Not in a solar system ??? Then show default location
             return system != null ? $"{system.FullLocation} ({system.SecurityLevel:N1})"

@@ -386,8 +386,9 @@ namespace EVEMon.CharacterMonitoring
         /// <param name="assets">The assets.</param>
         private async Task UpdateItemsCostAsync(IList<Asset> assets)
         {
-            lblTotalCost.Text = String.Format(CultureConstants.DefaultCulture, m_totalCostLabelDefaultText,
-                await TaskHelper.RunCPUBoundTaskAsync(() => assets.Sum(asset => asset.Price * asset.Quantity)));
+            lblTotalCost.Text = String.Format(CultureConstants.DefaultCulture,
+                m_totalCostLabelDefaultText, await TaskHelper.RunCPUBoundTaskAsync(() =>
+                assets.Sum(asset => asset.Price * asset.Quantity)));
 
             if (!totalCostThrobber.Visible && !Settings.MarketPricer.Pricer.Queried)
             {
@@ -399,9 +400,9 @@ namespace EVEMon.CharacterMonitoring
 
             totalCostThrobber.State = ThrobberState.Stopped;
             totalCostThrobber.Hide();
-            noPricesFoundLabel.Visible = assets
-                .Where(asset => asset.TypeOfBlueprint != BlueprintType.Copy.ToString())
-                .Any(asset => Math.Abs(asset.Price) < double.Epsilon);
+            noPricesFoundLabel.Visible = await TaskHelper.RunCPUBoundTaskAsync(() =>
+                assets.Where(asset => asset.TypeOfBlueprint != BlueprintType.Copy.ToString()).
+                Any(asset => Math.Abs(asset.Price) < double.Epsilon));
         }
 
         /// <summary>
@@ -775,7 +776,7 @@ namespace EVEMon.CharacterMonitoring
             builder.Append($"{item.Text} ({selectedAssets.First().Volume:N2} m³)")
                 .AppendLine()
                 .Append($"Total Quantity: {sumQuantity:N0} in {uniqueLocations:N0} " +
-                        $"{(uniqueLocations > 1 ? "different " : String.Empty)}location{(uniqueLocations > 1 ? "s" : String.Empty)}")
+                        $"{(uniqueLocations > 1 ? "different " : string.Empty)}location{uniqueLocations.S()}")
                 .AppendLine()
                 .Append($"Total Volume: {sumVolume:N2} m³")
                 .AppendLine()

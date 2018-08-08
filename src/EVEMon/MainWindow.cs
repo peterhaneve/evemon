@@ -1816,7 +1816,7 @@ namespace EVEMon
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void userVoiceMenuItem_Click(object sender, EventArgs e)
+        private void issuesFeaturesMenuItem_Click(object sender, EventArgs e)
         {
             Util.OpenURL(new Uri(NetworkConstants.EVEMonUserVoice));
         }

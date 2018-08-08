@@ -328,5 +328,15 @@ namespace EVEMon.Common.Extensions
             
             return string.Join(Environment.NewLine, lines);
         }
+
+        /// <summary>
+        /// Pluralizes a string as necessary.
+        /// </summary>
+        /// <param name="value">The value which will be displayed.</param>
+        /// <returns>"s" for value > 1, and "" otherwise.</returns>
+        public static string S(this int value)
+        {
+            return (value > 1) ? "s" : string.Empty;
+        }
     }
 }

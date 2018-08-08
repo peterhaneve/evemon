@@ -221,9 +221,7 @@ namespace EVEMon.About
             if (!EveMonClient.IsDebugBuild)
             {
                 return String.Format(CultureConstants.InvariantCulture, VersionLabel.Text,
-                    EveMonClient.IsSnapshotBuild
-                        ? version.FileVersion
-                        : version.ProductVersion);
+                    EveMonClient.IsSnapshotBuild ? version.FileVersion : version.ProductVersion);
             }
 
             // Returns the application file version (AssemblyFileVersion) 

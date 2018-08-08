@@ -102,5 +102,39 @@ namespace EVEMon.Common.Helpers
 
             return ((int)value * 1000 / 1000M).ToString("###", culture) + suffix;
         }
+
+        /// <summary>
+        /// Formats the given value into an abbreviated format string.
+        /// </summary>
+        /// <param name="direct">If true, ToNumericString is used instead of Format.</param>
+        /// <param name="places">If direct is true, the number of decimal places used for ToNumericString.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="truncated">if set to <c>true</c> [truncated].</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        public static string FormatIf(bool direct, int places, decimal value,
+            AbbreviationFormat format, bool truncated = true, CultureInfo culture = null)
+        {
+            return direct ? Format(value, format, truncated, culture) : value.ToNumericString(
+                places);
+        }
+
+        /// <summary>
+        /// Formats the given value into an abbreviated format string.
+        /// </summary>
+        /// <param name="direct">If true, ToNumericString is used instead of Format.</param>
+        /// <param name="places">If direct is true, the number of decimal places used for ToNumericString.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="truncated">if set to <c>true</c> [truncated].</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        public static string FormatIf(bool direct, long value, AbbreviationFormat format,
+            bool truncated = true, CultureInfo culture = null)
+        {
+            return direct ? Format(value, format, truncated, culture) : value.
+                ToNumericString(0);
+        }
     }
 }

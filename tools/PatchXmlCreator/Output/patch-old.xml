@@ -1,69 +1,66 @@
 ﻿<?xml version="1.0"?>
 <evemon xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <newest>
-    <date>13 June 2018</date>
-    <version>4.0.3.4792</version>
-    <md5>4d550405e8ab5c1e609d5a8b063edda1</md5>
-    <url>https://forums.eveonline.com/t/evemon-4-0-3-beta-under-new-ownership-conversion-for-esi/75953</url>
-    <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.3/EVEMon-install-4.0.3.exe</autopatchurl>
+    <date>02 July 2018</date>
+    <version>4.0.5.4828</version>
+    <md5>49d6b255b60fad1ea40535611587b321</md5>
+    <url>https://forums.eveonline.com/t/evemon-4-0-5-beta-under-new-ownership-conversion-for-esi/75953</url>
+    <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.5/EVEMon-install-4.0.5.exe</autopatchurl>
     <autopatchargs>/S /AUTORUN /SKIPDOTNET</autopatchargs>
     <additionalargs>/D=%EVEMON_EXECUTABLE_PATH%</additionalargs>
-    <message><![CDATA[# Release v4.0.3
+    <message><![CDATA[# Release v4.0.5
 
 ## Bug Fixes
-- Fix race condition loading local cache images
-- Fix improperly stored local kill mail cache
-- Fix issues saving structure and character names to local cache
-- Fix a crash when editing skill plans
-- Fix crashes during extended downtime
-- Fix crashes when skill queue is empty
-- Fix window flashing during character loading
-- Fix issue which could cause docked location to become out of date
-- Reduce notification spam when queue is fully completed
+- Fixed paginated endpoints, so all assets, contacts, standings, and so forth should be visible on characters with thousands of entries
+- Fixed characters loading twice on startup
+- Reduced ESI request count for planetary interaction
+- Fixed false notifications for skill completion on paused queues
+- Fixed lock up upon failure to fetch citadel info
 
 ## New Features
-- Performance improvements during window load
-- Private citadels will work better, especially in assets, market orders, industry jobs, and wallet transactions
-- Add debug information for TrustFailure errors
-- Update the About EVEMon dialog
+- Skill lists from EVE can now be pasted into the Skill Planner
+- Cache ESI responses to avoid retransmitting and importing unchanged data
+- More EVE notifications have the correct text
+- EVE notifications which could not be parsed are no longer shown as Unknown
+- Performance improvements via removing conquerable station checks and old API classes
 
 ## Contributors
 - Peter Han
-- SpeedProg
-- wbSD]]></message>
+- wbSD
+- SamuelHusky
+- kinstalinist
+- wvdvegt
+- Seavert]]></message>
   </newest>
   <releases>
     <release>
-      <date>13 June 2018</date>
-      <version>4.0.3.4792</version>
-      <md5>4d550405e8ab5c1e609d5a8b063edda1</md5>
-      <url>https://forums.eveonline.com/t/evemon-4-0-3-beta-under-new-ownership-conversion-for-esi/75953</url>
-      <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.3/EVEMon-install-4.0.3.exe</autopatchurl>
+      <date>04 August 2018</date>
+      <version>4.0.6.4838</version>
+      <md5>01263cb6262e61560242a145083bb84b</md5>
+      <url>https://forums.eveonline.com/t/evemon-4-0-6-beta-under-new-ownership-conversion-for-esi/75953</url>
+      <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.6/EVEMon-install-4.0.6.exe</autopatchurl>
       <autopatchargs>/S /AUTORUN /SKIPDOTNET</autopatchargs>
       <additionalargs>/D=%EVEMON_EXECUTABLE_PATH%</additionalargs>
-      <message><![CDATA[# Release v4.0.3
+      <message><![CDATA[# Release v4.0.6
 
 ## Bug Fixes
-- Fix race condition loading local cache images
-- Fix improperly stored local kill mail cache
-- Fix issues saving structure and character names to local cache
-- Fix a crash when editing skill plans
-- Fix crashes during extended downtime
-- Fix crashes when skill queue is empty
-- Fix window flashing during character loading
-- Fix issue which could cause docked location to become out of date
-- Reduce notification spam when queue is fully completed
+- Fix TrustFailure when using Dropbox cloud storage services
+- Fix all blueprints appearing as originals
+- Fix a crash in assets window
+- Fix skill plan import choking on trailing spaces
+- Fix some instances of duplicate industry job notifications
+- Multiple fixes to private citadel lookups
 
 ## New Features
-- Performance improvements during window load
-- Private citadels will work better, especially in assets, market orders, industry jobs, and wallet transactions
-- Add debug information for TrustFailure errors
-- Update the About EVEMon dialog
+- Blank Character Creator can now be used again
+- Assets in inaccessible structures are now visible
+- EVE Marketer can also be used to obtain pricing information
 
 ## Contributors
 - Peter Han
-- SpeedProg
-- wbSD]]></message>
+- wbSD
+- rudolfson
+- wvdvegt]]></message>
     </release>
   </releases>
   <datafiles>

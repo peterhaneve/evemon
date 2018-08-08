@@ -174,9 +174,8 @@ namespace EVEMon.CharacterMonitoring
                 : String.Empty;
 
             TimeSpan timeServed = DateTime.UtcNow.Subtract(m_charFacWarStats.EnlistedDate);
-            string timeServedText = timeServed < TimeSpan.FromDays(1)
-                                        ? "Less than one day."
-                                        : $"{timeServed.Days} day{(timeServed.Days > 1 ? "s" : String.Empty)}";
+            string timeServedText = timeServed < TimeSpan.FromDays(1) ? "Less than one day." :
+                $"{timeServed.Days} day{(timeServed.Days.S())}";
 
             FactionLabel.Text = $"Faction: {m_charFacWarStats.FactionName}";
             CorporationLabel.Text = $"Corporation: {Character.CorporationName}";

@@ -181,34 +181,36 @@ namespace EVEMon.Common.MarketPricer.EveMarketdata
         {
             bool error = true;
             SerializableEMDItemPriceList prices = null;
+            var downloadResult = result?.Result;
             // Reset query pending flag
             s_queryPending = false;
             Loaded = true;
-            if (result?.Result == null)
+            if (downloadResult == null)
                 // No result returned
                 EveMonClient.Trace("No result");
             else if (result.Error != null)
                 // Error
                 EveMonClient.Trace(result.Error.Message);
-            else if ((prices = result.Result.Result) == null || !prices.ItemPrices.Any())
+            else if ((prices = downloadResult.Result) == null || !prices.ItemPrices.Any())
                 // Empty result
                 EveMonClient.Trace("Empty result");
             else
                 error = false;
-            if (error)
+            if (error || prices == null)
                 // Retry in 1 hour, indicate error
                 CachedUntil = DateTime.UtcNow.AddHours(1);
             else
             {
                 // Retry in 1 day
                 CachedUntil = DateTime.UtcNow.AddDays(1);
-                Import(result.Result.Result.ItemPrices);
+                Import(prices.ItemPrices);
                 EveMonClient.Trace("done");
             }
             EveMonClient.OnPricesDownloaded(null, string.Empty);
             // Save the file in cache
-            SaveAsync(Filename, Util.SerializeToXmlDocument(result.Result)).ConfigureAwait(
-                false);
+            if (downloadResult != null)
+                SaveAsync(Filename, Util.SerializeToXmlDocument(downloadResult)).
+                    ConfigureAwait(false);
         }
 
         #endregion

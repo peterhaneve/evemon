@@ -14,6 +14,11 @@ namespace EVEMon.Common.Data
     /// </summary>
     public sealed class SolarSystem : ReadonlyCollection<Station>, IComparable<SolarSystem>
     {
+        /// <summary>
+        /// The unknown solar system, with an empty location and ID of 0.
+        /// </summary>
+        public static readonly SolarSystem UNKNOWN = new SolarSystem();
+
         // Do not set this as readonly !
         private FastList<SolarSystem> m_jumps;
 

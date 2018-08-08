@@ -155,7 +155,7 @@
     <comment>1200</comment>
   </data>
   <data name="EVEMonUserVoice" xml:space="preserve">
-    <value>https://evemon.uservoice.com/</value>
+    <value>https://github.com/peterhaneve/evemon/issues/</value>
   </data>
   <data name="ESIIndustryJobs" xml:space="preserve">
     <value>/v1/characters/{0:D}/industry/jobs/</value>

@@ -430,10 +430,7 @@ namespace EVEMon.Common.Models
             {
                 var station = EveIDToStation.GetIDToStation(m_installedItemLocationID,
                     character);
-                if (station != null)
-                    SolarSystem = station.SolarSystem;
-                else
-                    SolarSystem = new SolarSystem();
+                SolarSystem = station?.SolarSystem ?? SolarSystem.UNKNOWN;
             }
         }
 

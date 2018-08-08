@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 
 using HammertimeStructureList = System.Collections.Generic.Dictionary<string, EVEMon.Common.
     Serialization.Hammertime.HammertimeStructure>;
+using CitadelIDInfo = EVEMon.Common.Service.IDInformation<EVEMon.Common.Serialization.Eve.
+    SerializableOutpost, EVEMon.Common.Models.ESIKey>;
 
 namespace EVEMon.Common.Service
 {
@@ -26,8 +28,8 @@ namespace EVEMon.Common.Service
         private const string Filename = "ConquerableStationList";
 
         // Cache used to return all data, this is saved and loaded into the file
-        private static readonly Dictionary<long, CitadelInfo> s_cacheList =
-            new Dictionary<long, CitadelInfo>();
+        private static readonly Dictionary<long, CitadelIDInfo> s_cacheList =
+            new Dictionary<long, CitadelIDInfo>();
         
         // Provider for citadels
         private static readonly CitadelStationProvider s_cita = new CitadelStationProvider(
@@ -68,7 +70,7 @@ namespace EVEMon.Common.Service
             if (station == null && id > int.MaxValue)
             {
                 // Citadels have ID over maximum int value
-                var serStation = s_cita.LookupIDESI(id, character)?.Station;
+                var serStation = s_cita.LookupIDESI(id, character);
                 if (serStation != null)
                     station = new Station(serStation);
                 else
@@ -98,13 +100,7 @@ namespace EVEMon.Common.Service
         private static void Import(IEnumerable<SerializableOutpost> entities)
         {
             foreach (SerializableOutpost entity in entities)
-            {
-                long id = entity.StationID;
-
-                // Add the query result to our cache list if it doesn't exist already
-                if (!s_cacheList.ContainsKey(id))
-                    s_cacheList.Add(id, new CitadelInfo(entity));
-            }
+                s_cita.Prefill(entity.StationID, entity);
         }
 
         /// <summary>
@@ -147,8 +143,8 @@ namespace EVEMon.Common.Service
             {
                 foreach (var station in s_cacheList.Values)
                 {
+                    var result = station.Value;
                     // Only add stations which have been successfully fetched
-                    var result = station.Station;
                     if (result != null)
                         serial.Stations.Add(result);
                 }
@@ -160,15 +156,16 @@ namespace EVEMon.Common.Service
         /// <summary>
         /// Provides citadel ID lookups. Uses the citadel info endpoint.
         /// </summary>
-        private class CitadelStationProvider : IDToObjectProvider<CitadelInfo, ESIKey>
+        private class CitadelStationProvider : IDToObjectProvider<SerializableOutpost, ESIKey>
         {
-            // Tracks whether we actually got anywhere when a request was made
-            private volatile bool madeProgress;
-
-            public CitadelStationProvider(IDictionary<long, CitadelInfo> cacheList) :
+            public CitadelStationProvider(IDictionary<long, CitadelIDInfo> cacheList) :
                 base(cacheList)
             {
-                madeProgress = false;
+            }
+
+            protected override CitadelIDInfo CreateIDInfo(long id, SerializableOutpost value)
+            {
+                return new CitadelInfo(id, value);
             }
 
             protected override void FetchIDs()
@@ -191,12 +188,15 @@ namespace EVEMon.Common.Service
                 }
                 if (id != 0L)
                 {
-                    // info.Station must be null here, because non-null meant it was added
-                    // to m_requested and will thus not be seen in FetchIDs ever again
-                    var info = GetInfoFor(id);
-                    // If ESI key was tried before, fail immediately
-                    if (esiKey != null && !info.ESIFailed.Contains(esiKey))
+                    CitadelIDInfo info;
+                    lock (m_cache)
                     {
+                        m_cache.TryGetValue(id, out info);
+                    }
+                    // info should never be null at this stage
+                    if (esiKey != null)
+                    {
+                        info.OnRequestStart(esiKey);
                         // Query ESI for the citadel information
                         // No response is given because requests are only made to ESI once per
                         // key per session
@@ -205,127 +205,85 @@ namespace EVEMon.Common.Service
                             new ESIParams(null, esiKey.AccessToken)
                             {
                                 ParamOne = id
-                            }, new CitadelRequestInfo(id, esiKey));
+                            }, info);
                         EveMonClient.Trace("ESI lookup for {0:D} using {1}", id, esiKey);
                     }
 #if HAMMERTIME
-                    else if (!info.HammertimeFailed)
-                        // Only run hammer if we did not try it already
-                        LoadCitadelInformationFromHammertimeAPI(id);
-#endif
                     else
-                        // We tried hammer before and it failed; tried ESI and it failed
-                        OnLookupComplete();
+                        // Only run hammer if we did not try it already
+                        LoadCitadelInformationFromHammertimeAPI(info);
+#endif
                 }
             }
-
-            /// <summary>
-            /// Retrieves the previous request information for a citadel ID.
-            /// </summary>
-            /// <param name="id">The citadel ID</param>
-            /// <returns>null if never requested before, or information about what was tried
-            /// </returns>
-            private CitadelInfo GetInfoFor(long id)
-            {
-                CitadelInfo info;
-                lock (s_cacheList)
-                {
-                    if (!s_cacheList.TryGetValue(id, out info))
-                    {
-                        // Add a blank entry
-                        info = new CitadelInfo();
-                        s_cacheList.Add(id, info);
-                    }
-                }
-                return info;
-            }
-
+            
 #if HAMMERTIME
             /// <summary>
             /// Downloads citadel data from the Hammertime Citadel Hunt project.
             /// Avoids some access and API key problems on private citadels.
             /// </summary>
-            /// <param name="id">The citadel ID</param>
-            private void LoadCitadelInformationFromHammertimeAPI(long id)
+            /// <param name="info">The citadel ID information</param>
+            private void LoadCitadelInformationFromHammertimeAPI(CitadelIDInfo info)
             {
-                var url = new Uri(string.Format(NetworkConstants.HammertimeCitadel, id));
+                var url = new Uri(string.Format(NetworkConstants.HammertimeCitadel, info.ID));
+                info.OnRequestStart(null);
                 Util.DownloadJsonAsync<HammertimeStructureList>(url).ContinueWith((task) =>
                 {
-                    OnQueryStationUpdated(task, id);
+                    OnQueryStationUpdated(task, info);
                 });
             }
 
             private void OnQueryStationUpdated(Task<JsonResult<HammertimeStructureList>>
-                result, long id)
+                result, CitadelIDInfo info)
             {
-                JsonResult<HammertimeStructureList> jsonResult;
-                bool failed = false;
-
+                var jsonResult = result.Result;
                 // Bail if there is an error
-                if (result.IsFaulted || (jsonResult = result.Result).HasError)
-                    failed = true;
+                if (result.IsFaulted || jsonResult == null)
+                    EveMonClient.Notifications.NotifyCitadelQueryError(null);
+                else if (jsonResult.HasError)
+                {
+                    // Provide some more debugging info with the actual failed response
+                    var fakeResult = new EsiResult<EsiAPIStructure>(jsonResult.Response);
+                    EveMonClient.Notifications.NotifyCitadelQueryError(fakeResult);
+                }
                 else
                 {
                     EveMonClient.Notifications.InvalidateAPIError();
                     // Should only have one result, with an integer key
-                    var citInfo = jsonResult.Result;
-                    if (citInfo.Count == 1)
-                    {
-                        madeProgress = true;
-                        AddToCache(id, new CitadelInfo(citInfo.Values.First().ToXMLItem(id)));
-                    }
+                    var hammerData = jsonResult.Result;
+                    if (hammerData.Count == 1)
+                        info.OnRequestComplete(hammerData.Values.First().ToXMLItem(info.ID));
                     else
                     {
-                        failed = true;
-                        EveMonClient.Trace("Citadel Hunt failed for {0:D}", id);
+                        EveMonClient.Trace("Citadel Hunt failed for {0:D}", info.ID);
+                        info.OnRequestComplete(null);
                     }
                 }
-                if (failed)
-                {
-                    // We already tried ESI, and now hammer is a no-go as well
-                    EveMonClient.Notifications.NotifyCitadelQueryError(null);
-                    var failInfo = GetInfoFor(id);
-                    failInfo.HammertimeFailed = true;
-                    AddToCache(id, failInfo);
-                }
+                OnLookupComplete();
             }
 #endif
 
             private void OnQueryStationUpdatedEsi(EsiResult<EsiAPIStructure> result,
                 object reqInfo)
             {
-                var requestInfo = reqInfo as CitadelRequestInfo;
-                if (requestInfo == null)
-                    throw new InvalidOperationException("Wrong result type in citadel query");
-                long id = requestInfo.ID;
-                // Bail if there is an error
+                var info = reqInfo as CitadelIDInfo;
+                if (info == null)
+                    throw new ArgumentException("Invalid argument for citadel ID info");
+                // Consider trying hammertime if there is an error
                 if (result.HasError)
                 {
-                    var info = GetInfoFor(id);
-                    // Mark the ESI key failure so it will not be retried
-                    var esiKey = requestInfo.Key;
-                    info.ESIFailed.Add(esiKey);
-                    EveMonClient.Trace("ESI lookup failed for {0:D} blacklisting {1}", id,
-                        esiKey);
 #if HAMMERTIME
-                    LoadCitadelInformationFromHammertimeAPI(id);
+                    LoadCitadelInformationFromHammertimeAPI(info);
 #else
                     EveMonClient.Notifications.NotifyCitadelQueryError(result);
-                    // Requested but failed
-                    AddToCache(id, info);
+                    info.OnRequestComplete(null);
+                    OnLookupComplete();
 #endif
                 }
                 else
                 {
                     EveMonClient.Notifications.InvalidateAPIError();
-                    if (result.HasData)
-                    {
-                        madeProgress = true;
-                        AddToCache(id, new CitadelInfo(result.Result.ToXMLItem(id)));
-                    }
-                    else
-                        // Technically unreachable until we specify an ETag/If-Modified-Since
-                        OnLookupComplete();
+                    info.OnRequestComplete(result.Result.ToXMLItem(info.ID));
+                    OnLookupComplete();
                 }
             }
 
@@ -337,37 +295,17 @@ namespace EVEMon.Common.Service
             /// <param name="bypass">true to bypass the Prefetch filter, or false (default) to
             /// use it (recommended in most cases)</param>
             /// <returns>The object, or null if no item with this ID exists</returns>
-            public CitadelInfo LookupIDESI(long id, CCPCharacter character, bool
+            public SerializableOutpost LookupIDESI(long id, CCPCharacter character, bool
                 bypass = false)
             {
                 var key = character?.Identity?.FindAPIKeyWithAccess(ESIAPICharacterMethods.
                     CitadelInfo);
                 return LookupID(id, bypass, key);
             }
-
-            private void AddToCache(long id, CitadelInfo info)
-            {
-                lock (s_cacheList)
-                {
-                    // Add resulting info to the cache; duplicates should not occur, but
-                    // guard against them defensively
-                    if (s_cacheList.ContainsKey(id))
-                        s_cacheList[id] = info;
-                    else
-                        s_cacheList.Add(id, info);
-                    // Only add to requested list if successful since that will bar the code
-                    // from ever checking it again
-                    if (info.Station != null)
-                        m_requested.Add(id);
-                }
-                OnLookupComplete();
-            }
-
+            
             protected override void TriggerEvent()
             {
-                if (madeProgress)
-                    EveMonClient.OnConquerableStationListUpdated();
-                madeProgress = false;
+                EveMonClient.OnConquerableStationListUpdated();
                 s_savePending = true;
             }
         }
@@ -376,72 +314,64 @@ namespace EVEMon.Common.Service
         /// A class storing the state of an ESI/Hammertime station request, and if it failed,
         /// the methods which have been tried so far.
         /// </summary>
-        private sealed class CitadelInfo
+        private sealed class CitadelInfo : IDInformation<SerializableOutpost, ESIKey>
         {
-            /// <summary>
-            /// The ESI keys which have already been tried and failed.
-            /// </summary>
-            public ISet<ESIKey> ESIFailed { get; }
-
-            /// <summary>
-            /// True if hammertime was tried and failed.
-            /// </summary>
-            public bool HammertimeFailed { get; set; }
+            public long ID { get; }
 
             /// <summary>
             /// The station result if successful.
             /// </summary>
-            public SerializableOutpost Station { get; set; }
+            public SerializableOutpost Value { get; private set; }
 
             /// <summary>
-            /// Constructor around an existing station result.
+            /// The ESI keys which have already been tried.
             /// </summary>
-            public CitadelInfo(SerializableOutpost station = null)
+            private readonly ISet<ESIKey> esiAttempts;
+
+            /// <summary>
+            /// True if hammertime was tried.
+            /// </summary>
+            private bool hammerAttempt;
+
+            /// <summary>
+            /// Constructor around an existing citadel result.
+            /// </summary>
+            /// <param name="id">The citadel ID.</param>
+            /// <param name="station">The citadel value fetched.</param>
+            public CitadelInfo(long id, SerializableOutpost station)
             {
-                ESIFailed = new HashSet<ESIKey>();
-                HammertimeFailed = false;
-                Station = station;
-            }
-
-            public override string ToString()
-            {
-                return Station?.ToString() ?? EveMonConstants.UnknownText;
-            }
-        }
-
-        /// <summary>
-        /// Information about an ESI request (passed in the state field) for citadel info.
-        /// </summary>
-        private sealed class CitadelRequestInfo
-        {
-            /// <summary>
-            /// The ESI key used to request.
-            /// </summary>
-            public ESIKey Key { get; }
-
-            /// <summary>
-            /// The ID requested.
-            /// </summary>
-            public long ID { get; }
-
-            /// <summary>
-            /// Wraps citadel request info in a single state object.
-            /// </summary>
-            /// <param name="id">The citadel ID</param>
-            /// <param name="key">The ESI key used to request</param>
-            public CitadelRequestInfo(long id, ESIKey key)
-            {
-                if (id == 0L)
-                    throw new ArgumentException("id");
-                if (key == null)
-                    throw new ArgumentNullException("key");
+                esiAttempts = new HashSet<ESIKey>();
+                hammerAttempt = false;
                 ID = id;
-                Key = key;
+                Value = station;
+            }
+
+            public void OnRequestComplete(SerializableOutpost result)
+            {
+                if (Value == null || result != null)
+                    // Avoid overwriting cached result with failed result
+                    Value = result;
+            }
+
+            public void OnRequestStart(ESIKey extra)
+            {
+                if (extra == null)
+                    hammerAttempt = true;
+                else
+                    esiAttempts.Add(extra);
+            }
+
+            public bool RequestAttempted(ESIKey extra)
+            {
+                if (extra == null)
+                    return hammerAttempt;
+                else
+                    return esiAttempts.Contains(extra);
             }
 
             public override string ToString()
             {
-                return string.Format("ID #{0:D} using {1}", ID, Key);
+                return string.Format("{0:D} => {1}", ID, Value);
             }
         }
     }

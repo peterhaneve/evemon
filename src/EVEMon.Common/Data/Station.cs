@@ -110,6 +110,12 @@ namespace EVEMon.Common.Data
         public SolarSystem SolarSystem { get; }
 
         /// <summary>
+        /// Gets the solar system where this station is located. This accessor is checked
+        /// and instead of returning null returns an empty solar system
+        /// </summary>
+        public SolarSystem SolarSystemChecked => SolarSystem ?? SolarSystem.UNKNOWN;
+
+        /// <summary>
         /// Gets something like Region > Constellation > Solar System > Station.
         /// </summary>
         public string FullLocation { get; }
@@ -138,10 +144,10 @@ namespace EVEMon.Common.Data
         public int CompareTo(Station other)
         {
             other.ThrowIfNull(nameof(other));
-
-            return SolarSystem != other.SolarSystem
-                ? SolarSystem.CompareTo(other.SolarSystem)
-                : String.Compare(Name, other.Name, StringComparison.CurrentCulture);
+            // Properly handle null SolarSystem, it should be equal to SolarSystem with ID = 0
+            SolarSystem mine = SolarSystemChecked, theirs = other.SolarSystemChecked;
+            return mine != theirs ? mine.CompareTo(theirs) : string.Compare(Name, other.Name,
+                StringComparison.CurrentCulture);
         }
 
         #endregion

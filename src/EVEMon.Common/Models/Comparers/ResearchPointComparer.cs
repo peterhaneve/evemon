@@ -63,28 +63,30 @@ namespace EVEMon.Common.Models.Comparers
         {
             switch (m_column)
             {
-                case ResearchColumn.Agent:
-                    return String.Compare(x.AgentName, y.AgentName, StringComparison.CurrentCulture);
-                case ResearchColumn.Field:
-                    return String.Compare(x.Field, y.Field, StringComparison.CurrentCulture);
-                case ResearchColumn.Level:
-                    return x.AgentLevel.CompareTo(y.AgentLevel);
-                case ResearchColumn.CurrentRP:
-                    return x.CurrentRP.CompareTo(y.CurrentRP);
-                case ResearchColumn.PointsPerDay:
-                    return x.PointsPerDay.CompareTo(y.PointsPerDay);
-                case ResearchColumn.StartDate:
-                    return x.StartDate.CompareTo(y.StartDate);
-                case ResearchColumn.Location:
-                    return x.Station.CompareTo(y.Station);
-                case ResearchColumn.Region:
-                    return x.Station.SolarSystem.Constellation.Region.CompareTo(y.Station.SolarSystem.Constellation.Region);
-                case ResearchColumn.SolarSystem:
-                    return x.Station.SolarSystem.CompareTo(y.Station.SolarSystem);
-                case ResearchColumn.Station:
-                    return x.Station.CompareTo(y.Station);
-                default:
-                    return 0;
+            case ResearchColumn.Agent:
+                return string.Compare(x.AgentName, y.AgentName,
+                    StringComparison.CurrentCulture);
+            case ResearchColumn.Field:
+                return string.Compare(x.Field, y.Field, StringComparison.CurrentCulture);
+            case ResearchColumn.Level:
+                return x.AgentLevel.CompareTo(y.AgentLevel);
+            case ResearchColumn.CurrentRP:
+                return x.CurrentRP.CompareTo(y.CurrentRP);
+            case ResearchColumn.PointsPerDay:
+                return x.PointsPerDay.CompareTo(y.PointsPerDay);
+            case ResearchColumn.StartDate:
+                return x.StartDate.CompareTo(y.StartDate);
+            case ResearchColumn.Location:
+                return x.Station.CompareTo(y.Station);
+            case ResearchColumn.Region:
+                return x.Station.SolarSystemChecked.Constellation.Region.CompareTo(y.Station.
+                    SolarSystemChecked.Constellation.Region);
+            case ResearchColumn.SolarSystem:
+                return x.Station.SolarSystemChecked.CompareTo(y.Station.SolarSystemChecked);
+            case ResearchColumn.Station:
+                return x.Station.CompareTo(y.Station);
+            default:
+                return 0;
             }
         }
     }

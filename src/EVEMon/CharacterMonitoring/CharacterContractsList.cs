@@ -508,7 +508,7 @@ namespace EVEMon.CharacterMonitoring
             // Add enough subitems to match the number of columns
             while (item.SubItems.Count < lvContracts.Columns.Count + 1)
             {
-                item.SubItems.Add(String.Empty);
+                item.SubItems.Add(string.Empty);
             }
 
             // Creates the subitems
@@ -519,37 +519,32 @@ namespace EVEMon.CharacterMonitoring
             }
 
             // Tooltip
-            StringBuilder builder = new StringBuilder();
-            builder
-                .Append($"Issued For: {contract.IssuedFor}")
-                .AppendLine()
-                .Append($"Issued: {contract.Issued.ToLocalTime()}")
-                .AppendLine()
-                .Append($"Duration: {contract.Duration} Day{(contract.Duration > 1 ? "s" : String.Empty)}")
-                .AppendLine();
+            var builder = new StringBuilder();
+            builder.Append($"Issued For: {contract.IssuedFor}").AppendLine();
+            builder.Append($"Issued: {contract.Issued.ToLocalTime()}").AppendLine();
+            builder.Append($"Duration: {contract.Duration} ");
+            builder.Append($"Day{(contract.Duration.S())}").AppendLine();
 
             if (contract.ContractType == ContractType.Courier)
             {
-                builder
-                    .Append($"Days To Complete: {contract.DaysToComplete} " +
-                            $"Day{(contract.DaysToComplete > 1 ? "s" : String.Empty)}")
-                    .AppendLine();
+                builder.Append($"Days To Complete: {contract.DaysToComplete} ");
+                builder.Append($"Day{(contract.DaysToComplete.S())}");
+                builder.AppendLine();
             }
 
-            string prefix = contract.ContractType == ContractType.Courier ? "Starting " : String.Empty;
-            builder
-                .Append($"{prefix}Solar System: {contract.StartStation.SolarSystem.FullLocation}")
-                .AppendLine()
-                .Append($"{prefix}Station: {contract.StartStation.Name}")
-                .AppendLine();
+            string prefix = contract.ContractType == ContractType.Courier ? "Starting " :
+                string.Empty;
+            string startSS = contract.StartStation.SolarSystem?.FullLocation ??
+                EveMonConstants.UnknownText;
+            builder.Append($"{prefix}Solar System: {startSS}").AppendLine();
+            builder.Append($"{prefix}Station: {contract.StartStation.Name}").AppendLine();
 
             if (contract.ContractType == ContractType.Courier)
             {
-                builder
-                    .Append($"Ending Solar System: {contract.EndStation.SolarSystem.FullLocation}")
-                    .AppendLine()
-                    .Append($"Ending Station: {contract.EndStation.Name}")
-                    .AppendLine();
+                string endSS = contract.EndStation.SolarSystem?.FullLocation ??
+                    EveMonConstants.UnknownText;
+                builder.Append($"Ending Solar System: {endSS}").AppendLine();
+                builder.Append($"Ending Station: {contract.EndStation.Name}").AppendLine();
             }
 
             item.ToolTipText = builder.ToString();
@@ -621,6 +616,17 @@ namespace EVEMon.CharacterMonitoring
         }
 
         /// <summary>
+        /// Formats the price according to the settings.
+        /// </summary>
+        /// <param name="price">The price to display.</param>
+        /// <returns>The price as a string.</returns>
+        private static string FormatPrice(decimal price)
+        {
+            return FormatHelper.FormatIf(Settings.UI.MainWindow.Contracts.NumberAbsFormat,
+                2, price, AbbreviationFormat.AbbreviationSymbols);
+        }
+
+        /// <summary>
         /// Updates the listview sub-item.
         /// </summary>
         /// <param name="contract"></param>
@@ -628,117 +634,103 @@ namespace EVEMon.CharacterMonitoring
         /// <param name="column"></param>
         private static void SetColumn(Contract contract, ListViewItem.ListViewSubItem item, ContractColumn column)
         {
-            bool numberFormat = Settings.UI.MainWindow.Contracts.NumberAbsFormat;
-
+            Station start = contract.StartStation, end = contract.EndStation;
             switch (column)
             {
-                case ContractColumn.Status:
-                    item.Text = contract.Status.GetDescription();
-                    item.ForeColor = contract.Overdue ? Color.Red : Color.Black;
-                    break;
-                case ContractColumn.ContractText:
-                    item.Text = contract.ContractText;
-                    break;
-                case ContractColumn.Title:
-                    item.Text = contract.Description;
-                    break;
-                case ContractColumn.ContractType:
-                    item.Text = contract.ContractType.GetDescription();
-                    break;
-                case ContractColumn.Issuer:
-                    item.Text = contract.Issuer;
-                    break;
-                case ContractColumn.Assignee:
-                    item.Text = contract.Assignee;
-                    break;
-                case ContractColumn.Acceptor:
-                    item.Text = contract.Acceptor;
-                    break;
-                case ContractColumn.Availability:
-                    item.Text = contract.Availability.GetDescription();
-                    break;
-                case ContractColumn.Price:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(contract.Price, AbbreviationFormat.AbbreviationSymbols)
-                        : contract.Price.ToNumericString(2);
-                    break;
-                case ContractColumn.Buyout:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(contract.Buyout, AbbreviationFormat.AbbreviationSymbols)
-                        : contract.Buyout.ToNumericString(2);
-                    break;
-                case ContractColumn.Reward:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(contract.Reward, AbbreviationFormat.AbbreviationSymbols)
-                        : contract.Reward.ToNumericString(2);
-                    break;
-                case ContractColumn.Collateral:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(contract.Collateral, AbbreviationFormat.AbbreviationSymbols)
-                        : contract.Collateral.ToNumericString(2);
-                    break;
-                case ContractColumn.Volume:
-                    item.Text = numberFormat
-                        ? FormatHelper.Format(contract.Volume, AbbreviationFormat.AbbreviationSymbols)
-                        : contract.Volume.ToNumericString(2);
-                    break;
-                case ContractColumn.StartLocation:
-                    item.Text = contract.StartStation.FullLocation;
-                    break;
-                case ContractColumn.StartRegion:
-                    item.Text = contract.StartStation.SolarSystem.Constellation.Region.Name;
-                    break;
-                case ContractColumn.StartSolarSystem:
-                    item.Text = contract.StartStation.SolarSystem.Name;
-                    item.ForeColor = contract.StartStation.SolarSystem.SecurityLevelColor;
-                    break;
-                case ContractColumn.StartStation:
-                    item.Text = contract.StartStation.Name;
-                    break;
-                case ContractColumn.EndLocation:
-                    item.Text = contract.EndStation.FullLocation;
-                    break;
-                case ContractColumn.EndRegion:
-                    item.Text = contract.EndStation.SolarSystem.Constellation.Region.Name;
-                    break;
-                case ContractColumn.EndSolarSystem:
-                    item.Text = contract.EndStation.SolarSystem.Name;
-                    item.ForeColor = contract.EndStation.SolarSystem.SecurityLevelColor;
-                    break;
-                case ContractColumn.EndStation:
-                    item.Text = contract.EndStation.Name;
-                    break;
-                case ContractColumn.Issued:
-                    item.Text = contract.Issued.ToLocalTime().ToShortDateString();
-                    break;
-                case ContractColumn.Accepted:
-                    item.Text = contract.Accepted == DateTime.MinValue
-                        ? String.Empty
-                        : contract.Accepted.ToLocalTime().ToShortDateString();
-                    break;
-                case ContractColumn.Completed:
-                    item.Text = contract.Completed == DateTime.MinValue
-                        ? String.Empty
-                        : contract.Completed.ToLocalTime().ToShortDateString();
-                    break;
-                case ContractColumn.Duration:
-                    item.Text = $"{contract.Duration} Day{(contract.Duration > 1 ? "s" : String.Empty)}";
-                    break;
-                case ContractColumn.DaysToComplete:
-                    item.Text = contract.DaysToComplete == 0
-                        ? String.Empty
-                        : $"{contract.DaysToComplete} Day{(contract.DaysToComplete > 1 ? "s" : String.Empty)}";
-                    break;
-                case ContractColumn.Expiration:
-                    ListViewItemFormat format = FormatExpiration(contract);
-                    item.Text = format.Text;
-                    item.ForeColor = format.TextColor;
-                    break;
-                case ContractColumn.IssuedFor:
-                    item.Text = contract.IssuedFor.ToString();
-                    break;
-                default:
-                    throw new NotImplementedException();
+            case ContractColumn.Status:
+                item.Text = contract.Status.GetDescription();
+                item.ForeColor = contract.Overdue ? Color.Red : Color.Black;
+                break;
+            case ContractColumn.ContractText:
+                item.Text = contract.ContractText;
+                break;
+            case ContractColumn.Title:
+                item.Text = contract.Description;
+                break;
+            case ContractColumn.ContractType:
+                item.Text = contract.ContractType.GetDescription();
+                break;
+            case ContractColumn.Issuer:
+                item.Text = contract.Issuer;
+                break;
+            case ContractColumn.Assignee:
+                item.Text = contract.Assignee;
+                break;
+            case ContractColumn.Acceptor:
+                item.Text = contract.Acceptor;
+                break;
+            case ContractColumn.Availability:
+                item.Text = contract.Availability.GetDescription();
+                break;
+            case ContractColumn.Price:
+                item.Text = FormatPrice(contract.Price);
+                break;
+            case ContractColumn.Buyout:
+                item.Text = FormatPrice(contract.Buyout);
+                break;
+            case ContractColumn.Reward:
+                item.Text = FormatPrice(contract.Reward);
+                break;
+            case ContractColumn.Collateral:
+                item.Text = FormatPrice(contract.Collateral);
+                break;
+            case ContractColumn.Volume:
+                item.Text = FormatPrice(contract.Volume);
+                break;
+            case ContractColumn.StartLocation:
+                item.Text = start.FullLocation;
+                break;
+            case ContractColumn.StartRegion:
+                item.Text = start.SolarSystemChecked.Constellation.Region.Name;
+                break;
+            case ContractColumn.StartSolarSystem:
+                item.Text = start.SolarSystemChecked.Name;
+                item.ForeColor = start.SolarSystemChecked.SecurityLevelColor;
+                break;
+            case ContractColumn.StartStation:
+                item.Text = start.Name;
+                break;
+            case ContractColumn.EndLocation:
+                item.Text = end.FullLocation;
+                break;
+            case ContractColumn.EndRegion:
+                item.Text = end.SolarSystemChecked.Constellation.Region.Name;
+                break;
+            case ContractColumn.EndSolarSystem:
+                item.Text = end.SolarSystemChecked.Name;
+                item.ForeColor = end.SolarSystemChecked.SecurityLevelColor;
+                break;
+            case ContractColumn.EndStation:
+                item.Text = end.Name;
+                break;
+            case ContractColumn.Issued:
+                item.Text = contract.Issued.ToLocalTime().ToShortDateString();
+                break;
+            case ContractColumn.Accepted:
+                item.Text = contract.Accepted == DateTime.MinValue ? string.Empty : contract.
+                    Accepted.ToLocalTime().ToShortDateString();
+                break;
+            case ContractColumn.Completed:
+                item.Text = contract.Completed == DateTime.MinValue ? string.Empty : contract.
+                    Completed.ToLocalTime().ToShortDateString();
+                break;
+            case ContractColumn.Duration:
+                item.Text = $"{contract.Duration} Day{(contract.Duration.S())}";
+                break;
+            case ContractColumn.DaysToComplete:
+                item.Text = contract.DaysToComplete == 0 ? string.Empty :
+                    $"{contract.DaysToComplete} Day{(contract.DaysToComplete.S())}";
+                break;
+            case ContractColumn.Expiration:
+                ListViewItemFormat format = FormatExpiration(contract);
+                item.Text = format.Text;
+                item.ForeColor = format.TextColor;
+                break;
+            case ContractColumn.IssuedFor:
+                item.Text = contract.IssuedFor.ToString();
+                break;
+            default:
+                throw new NotImplementedException();
             }
         }
 
@@ -766,9 +758,9 @@ namespace EVEMon.CharacterMonitoring
                x.Description.ToUpperInvariant().Contains(text, ignoreCase: true) ||
                x.Availability.GetDescription().ToUpperInvariant().Contains(text, ignoreCase: true) ||
                x.StartStation.Name.ToUpperInvariant().Contains(text, ignoreCase: true) ||
-               x.StartStation.SolarSystem.Name.ToUpperInvariant().Contains(text, ignoreCase: true) ||
-               x.StartStation.SolarSystem.Constellation.Name.ToUpperInvariant().Contains(text, ignoreCase: true) ||
-               x.StartStation.SolarSystem.Constellation.Region.Name.ToUpperInvariant().Contains(text, ignoreCase: true);
+               x.StartStation.SolarSystemChecked.Name.ToUpperInvariant().Contains(text, ignoreCase: true) ||
+               x.StartStation.SolarSystemChecked.Constellation.Name.ToUpperInvariant().Contains(text, ignoreCase: true) ||
+               x.StartStation.SolarSystemChecked.Constellation.Region.Name.ToUpperInvariant().Contains(text, ignoreCase: true);
 
         /// <summary>
         /// Gets the text and formatting for the expiration cell

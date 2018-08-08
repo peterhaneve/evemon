@@ -367,17 +367,17 @@ namespace EVEMon.About
             this.gitHubLinkLabel.Text = "GitHub for hosting the project and providing our representation site.";
             this.gitHubLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
             // 
-            // eveCentralLinkLabel
+            // eveMarketerLinkLabel
             // 
             this.eveMarketerLinkLabel.AutoSize = true;
             this.eveMarketerLinkLabel.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
             this.eveMarketerLinkLabel.Location = new System.Drawing.Point(0, 102);
             this.eveMarketerLinkLabel.Margin = new System.Windows.Forms.Padding(0);
-            this.eveMarketerLinkLabel.Name = "eveCentralLinkLabel";
+            this.eveMarketerLinkLabel.Name = "eveMarketerLinkLabel";
             this.eveMarketerLinkLabel.Padding = new System.Windows.Forms.Padding(5, 3, 0, 3);
-            this.eveMarketerLinkLabel.Size = new System.Drawing.Size(210, 19);
+            this.eveMarketerLinkLabel.Size = new System.Drawing.Size(216, 19);
             this.eveMarketerLinkLabel.TabIndex = 12;
-            this.eveMarketerLinkLabel.Text = "EVE-Central for their market data and API.";
+            this.eveMarketerLinkLabel.Text = "EVEMarketer for their market data and API.";
             this.eveMarketerLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
             // 
             // eveMarketDataLinkLabel

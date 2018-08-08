@@ -11,6 +11,7 @@ using EVEMon.Common.Data;
 using EVEMon.Common.Helpers;
 using EVEMon.Common.Serialization.PatchXml;
 using EVEMon.Common.Service;
+using EVEMon.Common.Extensions;
 
 namespace EVEMon.Updater
 {
@@ -86,31 +87,31 @@ namespace EVEMon.Updater
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             DialogResult result = DialogResult.Yes;
-            int changedFilesCount = m_args.ChangedFiles.Count;
+            int changedFilesCount = m_args.ChangedFiles.Count, newCount = changedFilesCount;
 
             // Delete the EVE Flags xml file from cache to force a refetch on next startup
             FileHelper.DeleteFile(LocalXmlCache.GetFileInfo(EveFlag.Filename).FullName);
 
-            while (m_args.ChangedFiles.Count != 0 && result == DialogResult.Yes)
+            while (newCount != 0 && result == DialogResult.Yes)
             {
                 if (m_formClosing)
                     break;
 
                 DownloadUpdates();
+                newCount = m_args.ChangedFiles.Count;
 
-                if (m_args.ChangedFiles.Count == 0)
+                if (newCount == 0)
                     break;
 
                 // One or more files failed
-                string message = $"{m_args.ChangedFiles.Count} " +
-                                 $"file{(m_args.ChangedFiles.Count == 1 ? String.Empty : "s")} " +
-                                 "failed to download, do you wish to try again?";
+                string message = newCount +
+                    $" file{(newCount.S())} failed to download, do you wish to try again?";
 
                 result = MessageBox.Show(message, @"Failed Download", MessageBoxButtons.YesNo);
             }
 
             // If no files were updated, abort the update process
-            DialogResult = m_args.ChangedFiles.Count == changedFilesCount ? DialogResult.Abort : DialogResult.OK;
+            DialogResult = newCount == changedFilesCount ? DialogResult.Abort : DialogResult.OK;
         }
 
         /// <summary>

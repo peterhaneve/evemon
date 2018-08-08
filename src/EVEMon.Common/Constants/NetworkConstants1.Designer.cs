@@ -1078,7 +1078,7 @@ namespace EVEMon.Common.Constants {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://evemon.uservoice.com/.
+        ///   Looks up a localized string similar to https://github.com/peterhaneve/evemon/issues/.
         /// </summary>
         public static string EVEMonUserVoice {
             get {

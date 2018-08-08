@@ -11,7 +11,7 @@ namespace EVEMon.Common.Service
         /// <summary>
         /// Reference to the master cache list.
         /// </summary>
-        protected readonly IDictionary<long, T> m_cache;
+        protected readonly IDictionary<long, IDInformation<T, X>> m_cache;
 
         /// <summary>
         /// List of IDs awaiting query. No duplicates allowed, and in ascending order for
@@ -24,24 +24,58 @@ namespace EVEMon.Common.Service
         /// </summary>
         protected volatile bool m_queryPending;
 
-        // IDs refreshed during this session
-        protected readonly ISet<long> m_requested;
-
-        protected IDToObjectProvider(IDictionary<long, T> cache)
+        protected IDToObjectProvider(IDictionary<long, IDInformation<T, X>> cache)
         {
             cache.ThrowIfNull(nameof(cache));
 
             m_cache = cache;
             m_pendingIDs = new SortedDictionary<long, X>();
-            m_requested = new HashSet<long>();
             m_queryPending = false;
         }
+
+        /// <summary>
+        /// Creates a new IDInformation object for this provider.
+        /// </summary>
+        /// <param name="id">The ID which needs information.</param>
+        /// <param name="value">The prefilled/prefetched value, or default(T) if it is not
+        /// yet known</param>
+        /// <returns>A new instance of ID information for the specified ID.</returns>
+        protected abstract IDInformation<T, X> CreateIDInfo(long id, T value);
 
         /// <summary>
         /// Evict as many IDs as can be handled at once from m_pendingIDs and update
         /// m_cache with the new mappings. Call OnLookupComplete in callback.
         /// </summary>
         protected abstract void FetchIDs();
+
+        /// <summary>
+        /// Checks (without locking) to see if the ID needs to be queried. Inserts a new
+        /// record into the table if needed with blank information.
+        /// </summary>
+        /// <param name="id">The ID to check.</param>
+        /// <param name="extra">The data to use while making the request.</param>
+        /// <param name="value">The result which is currently known for this ID.</param>
+        /// <returns>true if the ID needs to be queried, or false otherwise</returns>
+        private bool IsNeeded(long id, X extra, out T value)
+        {
+            bool needsUpdate;
+            IDInformation<T, X> currentInfo;
+            m_cache.TryGetValue(id, out currentInfo);
+            if (currentInfo != null)
+            {
+                // Check if request was attempted
+                needsUpdate = !currentInfo.RequestAttempted(extra);
+                value = currentInfo.Value;
+            }
+            else
+            {
+                // Never seen before, force an update
+                needsUpdate = true;
+                value = default(T);
+                m_cache.Add(id, CreateIDInfo(id, value));
+            }
+            return needsUpdate;
+        }
 
         /// <summary>
         /// Convert the ID to an object.
@@ -52,7 +86,7 @@ namespace EVEMon.Common.Service
         /// <returns>The object, or null if no item with this ID exists</returns>
         public T LookupID(long id, bool bypass = false)
         {
-            return LookupID(id, bypass, null);
+            return LookupID(id, bypass, default(X));
         }
 
         /// <summary>
@@ -67,18 +101,14 @@ namespace EVEMon.Common.Service
         protected T LookupID(long id, bool bypass, X extra)
         {
             T value;
-            bool needsUpdate = false;
-
+            bool needsUpdate;
             // Thread safety
             lock (m_cache)
             {
-                if (bypass || (value = Prefetch(id)) == default(T))
-                {
-                    m_cache.TryGetValue(id, out value);
-                    needsUpdate = !m_requested.Contains(id) && QueueID(id, extra);
-                }
+                // Queue update if necessary
+                needsUpdate = (bypass || (value = Prefetch(id)) == default(T)) && IsNeeded(id,
+                    extra, out value) && QueueID(id, extra);
             }
-
             if (needsUpdate)
                 // No query running and a new one needs to be started; note that new queries
                 // will be started even for IDs in the cache if they need to be updated
@@ -96,27 +126,20 @@ namespace EVEMon.Common.Service
             T value;
             bool start = false;
             var ret = new LinkedList<T>();
-
             // Thread safety
             lock (m_cache)
             {
                 foreach (var id in ids)
                 {
-                    if ((value = Prefetch(id)) == default(T))
-                    {
-                        // Always add the value, even if it is null
-                        m_cache.TryGetValue(id, out value);
-                        ret.AddLast(value);
-                        if (!m_requested.Contains(id) && QueueID(id))
-                            start = true;
-                    }
+                    // Queue update if necessary
+                    if ((value = Prefetch(id)) == default(T) && IsNeeded(id, default(X),
+                        out value) && QueueID(id)) start = true;
+                    ret.AddLast(value);
                 }
             }
-
             // One query for many IDs
             if (start)
                 FetchIDs();
-
             return ret;
         }
 
@@ -161,14 +184,14 @@ namespace EVEMon.Common.Service
         /// </summary>
         /// <param name="id">The ID.</param>
         /// <param name="value">The value that should be returned for this ID.</param>
-        public void Prefill(long id, T value) {
+        public void Prefill(long id, T value)
+        {
+            var info = CreateIDInfo(id, value);
             // Overwrite if it exists
             if (m_cache.ContainsKey(id))
-                m_cache[id] = value;
+                m_cache[id] = info;
             else
-                m_cache.Add(id, value);
-
-            m_requested.Add(id);
+                m_cache.Add(id, info);
         }
 
         /// <summary>
@@ -204,5 +227,45 @@ namespace EVEMon.Common.Service
         /// Triggers the proper EVEMon event when updates are completed.
         /// </summary>
         protected abstract void TriggerEvent();
+    }
+
+    /// <summary>
+    /// Describes an object with information about an ID and what has been done to attempt it.
+    /// </summary>
+    internal interface IDInformation<T, X> where T : class where X : class
+    {
+        /// <summary>
+        /// The ID which was used to fetch this information.
+        /// </summary>
+        long ID { get; }
+
+        /// <summary>
+        /// The information retrieved, or default(T) if the request has failed or not yet
+        /// been attempted.
+        /// </summary>
+        T Value { get; }
+
+        /// <summary>
+        /// Called when a request completes or fails.
+        /// </summary>
+        /// <param name="result">The request result, or default(T) if it failed.</param>
+        void OnRequestComplete(T result);
+
+        /// <summary>
+        /// Called when a request begins for the specified ID.
+        /// </summary>
+        /// <param name="extra">The extra data to be used on the request.</param>
+        void OnRequestStart(X extra);
+
+        /// <summary>
+        /// Returns true if a request was already attempted using this information. If true,
+        /// another request will not be attempted (unless the request is currently in the
+        /// queue).
+        /// 
+        /// Should return false if the ID was loaded from a cache.
+        /// </summary>
+        /// <param name="extra">The extra information to use for the request.</param>
+        /// <returns>Whether a request was attempted already in this session.</returns>
+        bool RequestAttempted(X extra);
     }
 }
