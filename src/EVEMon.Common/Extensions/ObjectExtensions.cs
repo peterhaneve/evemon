@@ -12,7 +12,6 @@ namespace EVEMon.Common.Extensions
         /// <param name="paramName">Name of the parameter.</param>
         /// <param name="message">The message.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        [Obsolete("Use Util.ThrowIfNull(obj)")]
         public static void ThrowIfNull<T>(this T obj, string paramName, string message = null)
         {
             if (obj == null)
