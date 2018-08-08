@@ -1588,6 +1588,11 @@ namespace EVEMon.SkillPlanner
         {
             Skill skill = ((PlanEntry)lvSkills.SelectedItems[0]?.Tag)?.CharacterSkill;
 
+            if (skill == null)
+            {
+                return;
+            }
+
             // Open the skill browser
             PlanWindow planWindow = ParentForm as PlanWindow;
             planWindow?.ShowSkillInBrowser(skill);
@@ -1602,7 +1607,12 @@ namespace EVEMon.SkillPlanner
         private void miShowInSkillExplorer_Click(object sender, EventArgs e)
         {
             Skill skill = ((PlanEntry)lvSkills.SelectedItems[0]?.Tag)?.CharacterSkill;
-            
+
+            if (skill == null)
+            {
+                return;
+            }
+
             // Open the skill explorer
             SkillExplorerWindow.ShowSkillExplorerWindow(m_character, m_plan).ShowSkillInExplorer(skill);
         }
