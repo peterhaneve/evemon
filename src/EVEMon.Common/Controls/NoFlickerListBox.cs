@@ -51,6 +51,9 @@ namespace EVEMon.Common.Controls
                 case (int)WM.WM_ERASEBKGND:
                     PaintNonItemRegion();
                     m.Msg = (int)WM.WM_NULL;
+                    m.LParam = IntPtr.Zero;
+                    m.WParam = IntPtr.Zero;
+                    m.Result = IntPtr.Zero;
                     break;
             }
             base.WndProc(ref m);

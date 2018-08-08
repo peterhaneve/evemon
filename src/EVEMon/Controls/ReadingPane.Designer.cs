@@ -62,6 +62,7 @@ namespace EVEMon.Controls
             this.wbMailBody.ScriptErrorsSuppressed = true;
             this.wbMailBody.Size = new System.Drawing.Size(257, 81);
             this.wbMailBody.TabIndex = 2;
+            this.wbMailBody.Url = new System.Uri("about:blank\r", System.UriKind.Absolute);
             this.wbMailBody.WebBrowserShortcutsEnabled = false;
             this.wbMailBody.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.wbMailBody_Navigating);
             this.wbMailBody.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.wbMailBody_PreviewKeyDown);
