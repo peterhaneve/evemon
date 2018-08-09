@@ -45,6 +45,11 @@ namespace EVEMon.Common
         public static event EventHandler CharacterCollectionChanged;
 
         /// <summary>
+        /// Occurs when a character's label is changed.
+        /// </summary>
+        public static event EventHandler<LabelChangedEventArgs> CharacterLabelChanged;
+
+        /// <summary>
         /// Occurs when the collection of monitored characters changed.
         /// </summary>
         public static event EventHandler MonitoredCharacterCollectionChanged;
@@ -597,7 +602,21 @@ namespace EVEMon.Common
             Settings.Save();
             CharacterInfoUpdated?.ThreadSafeInvoke(null, new CharacterChangedEventArgs(character));
         }
-        
+
+        /// <summary>
+        /// Called when the character label is changed via the UI.
+        /// </summary>
+        /// <param name="character">The character.</param>
+        public static void OnCharacterLabelChanged(Character character)
+        {
+            if (Closed)
+                return;
+
+            Trace(character.Name);
+            CharacterLabelChanged?.ThreadSafeInvoke(null, new LabelChangedEventArgs(character,
+                Characters.GetKnownLabels()));
+        }
+
         /// <summary>
         /// Called when the character skill queue updated.
         /// </summary>

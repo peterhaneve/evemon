@@ -128,6 +128,7 @@ namespace EVEMon.Controls
             EveMonClient.SchedulerChanged += EveMonClient_SchedulerChanged;
             EveMonClient.SettingsChanged += EveMonClient_SettingsChanged;
             EveMonClient.TimerTick += EveMonClient_TimerTick;
+            EveMonClient.CharacterLabelChanged += EveMonClient_CharacterLabelChanged;
             Disposed += OnDisposed;
 
             UpdateOnSettingsChanged();
@@ -147,6 +148,7 @@ namespace EVEMon.Controls
             EveMonClient.SchedulerChanged -= EveMonClient_SchedulerChanged;
             EveMonClient.SettingsChanged -= EveMonClient_SettingsChanged;
             EveMonClient.TimerTick -= EveMonClient_TimerTick;
+            EveMonClient.CharacterLabelChanged -= EveMonClient_CharacterLabelChanged;
             Disposed -= OnDisposed;
         }
 
@@ -315,7 +317,7 @@ namespace EVEMon.Controls
                 return;
 
             // Update character's 'Adorned Name' and 'Portrait' in case they have changed
-            lblCharName.Text = Character.AdornedName;
+            lblCharName.Text = Character.LabelPrefix + Character.AdornedName;
             pbCharacterPortrait.Character = Character;
             lblTotalSkillPoints.Text = string.Format("{0:N0} SP", Character.SkillPoints);
 
@@ -489,6 +491,17 @@ namespace EVEMon.Controls
 
 
         #region Global Events
+
+        /// <summary>
+        /// When a character label is changed, we update if it is our character.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EveMonClient_CharacterLabelChanged(object sender, LabelChangedEventArgs e)
+        {
+            if (e.Character == Character)
+                UpdateContent();
+        }
 
         /// <summary>
         /// On every second, we update the remaining time.

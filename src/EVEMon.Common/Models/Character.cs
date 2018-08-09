@@ -25,8 +25,9 @@ namespace EVEMon.Common.Models
     [EnforceUIThreadAffinity]
     public abstract class Character : BaseCharacter
     {
-        // Character
+        // Character name
         private string m_name;
+        private string m_label;
 
         // Attributes
         private readonly CharacterAttribute[] m_attributes = new CharacterAttribute[5];
@@ -52,6 +53,7 @@ namespace EVEMon.Common.Models
 
             Identity = identity;
             Guid = guid;
+            m_label = string.Empty;
 
             Corporation = new Corporation(this);
 
@@ -293,12 +295,34 @@ namespace EVEMon.Common.Models
         #region Info
 
         /// <summary>
+        /// Gets or sets the character's custom label. This is used for display only.
+        /// </summary>
+        public string Label
+        {
+            get
+            {
+                return m_label;
+            }
+            set
+            {
+                m_label = value ?? string.Empty;
+                EveMonClient.OnCharacterLabelChanged(this);
+            }
+        }
+
+        /// <summary>
+        /// Generates a prefix to be used on the character's name in the overview and tab list
+        /// when the character has a custom label.
+        /// </summary>
+        public string LabelPrefix => m_label.IsEmptyOrUnknown() ? string.Empty : "[" + m_label + "] ";
+
+        /// <summary>
         /// Gets the character's ship name.
         /// </summary>
         public string ShipName { get; private set; }
 
         /// <summary>
-        /// Gets the character's shipType name.
+        /// Gets the character's ship type name.
         /// </summary>
         public string ShipTypeName { get; private set; }
 
@@ -313,7 +337,7 @@ namespace EVEMon.Common.Models
         public double SecurityStatus { get; private set; }
 
         /// <summary>
-        /// Gets or sets the character's  employment history.
+        /// Gets or sets the character's employment history.
         /// </summary>
         public EmploymentRecordCollection EmploymentHistory { get; }
 
@@ -615,6 +639,7 @@ namespace EVEMon.Common.Models
             serial.Balance = Balance;
 
             // Info
+            serial.Label = m_label;
             serial.ShipName = ShipName;
             serial.ShipTypeName = ShipTypeName;
             serial.SecurityStatus = SecurityStatus;
@@ -894,16 +919,18 @@ namespace EVEMon.Common.Models
             JumpLastUpdateDate = serial.JumpLastUpdateDate;
             Balance = serial.Balance;
 
-            if (serial is SerializableSettingsCharacter)
+            var settingsChar = serial as SerializableSettingsCharacter;
+            if (settingsChar != null)
             {
                 // Info
-                ShipName = serial.ShipName;
-                ShipTypeName = serial.ShipTypeName;
-                SecurityStatus = serial.SecurityStatus;
-                LastKnownLocation = serial.LastKnownLocation;
+                m_label = settingsChar.Label ?? string.Empty;
+                ShipName = settingsChar.ShipName;
+                ShipTypeName = settingsChar.ShipTypeName;
+                SecurityStatus = settingsChar.SecurityStatus;
+                LastKnownLocation = settingsChar.LastKnownLocation;
 
                 // Employment History
-                EmploymentHistory.Import(serial.EmploymentHistory);
+                EmploymentHistory.Import(settingsChar.EmploymentHistory);
             }
 
             // Attributes

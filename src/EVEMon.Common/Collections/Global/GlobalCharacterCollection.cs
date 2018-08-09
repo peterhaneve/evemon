@@ -172,6 +172,24 @@ namespace EVEMon.Common.Collections.Global
         internal IEnumerable<SerializableSettingsCharacter> Export() => Items.Select(character => character.Export());
 
         /// <summary>
+        /// Searches through all characters in this collection and reports a list of the
+        /// custom labels that are already defined. null and empty string will not be
+        /// included. Labels are case sensitive.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetKnownLabels()
+        {
+            var labels = new SortedSet<string>();
+            foreach (Character character in Items)
+            {
+                string label = character.Label;
+                if (!label.IsEmptyOrUnknown())
+                    labels.Add(label);
+            }
+            return labels;
+        }
+
+        /// <summary>
         /// imports the plans from serialization objects.
         /// </summary>
         /// <param name="serial"></param>

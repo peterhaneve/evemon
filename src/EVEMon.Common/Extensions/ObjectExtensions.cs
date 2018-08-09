@@ -15,9 +15,7 @@ namespace EVEMon.Common.Extensions
         public static void ThrowIfNull<T>(this T obj, string paramName, string message = null)
         {
             if (obj == null)
-            {
                 throw new ArgumentNullException(paramName, message ?? "Value cannot be null.");
-            }
         }
     }
 }

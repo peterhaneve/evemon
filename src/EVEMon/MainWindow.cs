@@ -206,6 +206,7 @@ namespace EVEMon
             EveMonClient.QueuedSkillsCompleted += EveMonClient_QueuedSkillsCompleted;
             EveMonClient.SettingsChanged += EveMonClient_SettingsChanged;
             EveMonClient.TimerTick += EveMonClient_TimerTick;
+            EveMonClient.CharacterLabelChanged += EveMonClient_CharacterLabelChanged;
             
             EveMonClient.Trace("Main window - loaded", printMethod: false);
         }
@@ -387,6 +388,17 @@ namespace EVEMon
         #region Tabs management
 
         /// <summary>
+        /// Occurs when a character's label is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EveMonClient_CharacterLabelChanged(object sender, LabelChangedEventArgs e)
+        {
+            if (!m_isUpdatingTabOrder)
+                UpdateTabs();
+        }
+
+        /// <summary>
         /// Occurs when the monitored characters collection is changed.
         /// </summary>
         /// <param name="sender"></param>
@@ -444,7 +456,10 @@ namespace EVEMon
                         currentPage = ++index < tcCharacterTabs.TabCount ? tcCharacterTabs.TabPages[index] : null;
 
                     // Does the page match with the character ?
-                    if ((Character)currentPage?.Tag != character)
+                    if ((Character)currentPage?.Tag == character)
+                        // Update the text in case label changed
+                        currentPage.Text = character.LabelPrefix + character.Name;
+                    else
                     {
                         // Retrieve the page when it was previously created
                         // Is the page later in the collection ?
@@ -498,7 +513,8 @@ namespace EVEMon
             if (Settings.UI.MainWindow.ShowOverview)
             {
                 // Trim the overview page index
-                int overviewIndex = Math.Max(0, Math.Min(tcCharacterTabs.TabCount - 1, Settings.UI.MainWindow.OverviewIndex));
+                int overviewIndex = Math.Max(0, Math.Min(tcCharacterTabs.TabCount - 1,
+                    Settings.UI.MainWindow.OverviewIndex));
 
                 // Inserts it if it doesn't exist
                 if (!tcCharacterTabs.TabPages.Contains(tpOverview))
@@ -535,7 +551,7 @@ namespace EVEMon
             TabPage tempPage = null;
             try
             {
-                tempPage = new TabPage(character.Name);
+                tempPage = new TabPage(character.LabelPrefix + character.Name);
                 tempPage.UseVisualStyleBackColor = true;
                 tempPage.Padding = new Padding(5);
                 tempPage.Tag = character;

@@ -169,6 +169,7 @@
       <DependentUpon>NetworkConstants.resx</DependentUpon>
     </Compile>
     <Compile Include="Controls\CustomCursors.cs" />
+    <Compile Include="CustomEventArgs\LabelChangedEventArgs.cs" />
     <Compile Include="Data\Faction.cs" />
     <Compile Include="Data\Planet.cs" />
     <Compile Include="Enumerations\AttributeOptimizationStrategy.cs" />

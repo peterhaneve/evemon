@@ -12,6 +12,9 @@ namespace EVEMon.Common.Serialization.Settings
         [XmlAttribute("guid")]
         public Guid Guid { get; set; }
 
+        [XmlAttribute("label")]
+        public string Label { get; set; }
+
         [XmlElement("implants")]
         public SerializableImplantSetCollection ImplantSets { get; set; }
     }
