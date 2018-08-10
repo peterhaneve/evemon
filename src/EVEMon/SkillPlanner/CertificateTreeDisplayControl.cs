@@ -647,10 +647,13 @@ namespace EVEMon.SkillPlanner
         /// <param name="e"></param>
         private void showInBrowserMenu_Click(object sender, EventArgs e)
         {
-            Skill skill = ((SkillLevel)treeView.SelectedNode?.Tag)?.Skill;
-
-            // Open the skill browser
-            PlanWindow.ShowPlanWindow(m_character, m_plan).ShowSkillInBrowser(skill);
+            Skill skill;
+            if (treeView.SelectedNode?.Tag is SkillLevel skillLevel
+                && (skill = skillLevel?.Skill) != null)
+            {
+                // Open the skill browser
+                PlanWindow.ShowPlanWindow(m_character, m_plan).ShowSkillInBrowser(skill);
+            }
         }
 
         /// <summary>
