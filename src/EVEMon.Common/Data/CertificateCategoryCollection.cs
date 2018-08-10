@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EVEMon.Common.Attributes;
+﻿using EVEMon.Common.Attributes;
 using EVEMon.Common.Collections;
 using EVEMon.Common.Models;
 
@@ -17,9 +16,9 @@ namespace EVEMon.Common.Data
         /// <param name="character"></param>
         internal CertificateCategoryCollection(Character character)
         {
-            foreach (CertificateGroup category in StaticCertificates.AllGroups
-                .Select(srcCategory => new CertificateGroup(character, srcCategory)))
+            foreach (var srcCategory in StaticCertificates.AllGroups)
             {
+                var category = new CertificateGroup(character, srcCategory);
                 Items[category.ID] = category;
             }
         }

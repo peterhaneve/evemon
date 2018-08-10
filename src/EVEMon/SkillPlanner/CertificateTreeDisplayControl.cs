@@ -647,10 +647,12 @@ namespace EVEMon.SkillPlanner
         /// <param name="e"></param>
         private void showInBrowserMenu_Click(object sender, EventArgs e)
         {
-            Skill skill = ((SkillLevel)treeView.SelectedNode?.Tag)?.Skill;
+            var skillTag = treeView.SelectedNode?.Tag as SkillLevel;
 
-            // Open the skill browser
-            PlanWindow.ShowPlanWindow(m_character, m_plan).ShowSkillInBrowser(skill);
+            if (skillTag != null)
+                // Open the skill browser
+                PlanWindow.ShowPlanWindow(m_character, m_plan).ShowSkillInBrowser(skillTag.
+                    Skill);
         }
 
         /// <summary>
@@ -660,10 +662,12 @@ namespace EVEMon.SkillPlanner
         /// <param name="e"></param>
         private void showInExplorerMenu_Click(object sender, EventArgs e)
         {
-            Skill skill = ((SkillLevel)treeView.SelectedNode?.Tag)?.Skill;
+            var skillTag = treeView.SelectedNode?.Tag as SkillLevel;
 
-            // Open the skill explorer
-            SkillExplorerWindow.ShowSkillExplorerWindow(m_character, m_plan).ShowSkillInExplorer(skill);
+            if (skillTag != null)
+                // Open the skill explorer
+                SkillExplorerWindow.ShowSkillExplorerWindow(m_character, m_plan).
+                    ShowSkillInExplorer(skillTag.Skill);
         }
 
         #endregion

@@ -16,6 +16,7 @@ using EVEMon.Common.SettingsObjects;
 using EVEMon.Common.Serialization.Esi;
 using EVEMon.Common.Service;
 using System.Globalization;
+using EVEMon.Common.Helpers;
 
 namespace EVEMon.Common.Models
 {
@@ -862,6 +863,8 @@ namespace EVEMon.Common.Models
                 newSkills.AddLast(skill.ToXMLItem());
             }
             Skills.Import(newSkills, true);
+
+            UpdateMasteries();
         }
 
         /// <summary>
@@ -943,11 +946,20 @@ namespace EVEMon.Common.Models
             // Skills
             Skills.Import(serial.Skills, serial is SerializableAPICharacterSheet);
 
-            // Certificates
-            Certificates.Initialize();
+            UpdateMasteries();
+        }
 
-            // Masteries
-            MasteryShips.Initialize();
+        /// <summary>
+        /// Updates the character masteries and certificates, such as after a skill level change.
+        /// </summary>
+        private void UpdateMasteries()
+        {
+            TaskHelper.RunCPUBoundTaskAsync(() =>
+            {
+                // Certificates and masteries
+                Certificates.Initialize();
+                MasteryShips.Initialize();
+            });
         }
 
         /// <summary>

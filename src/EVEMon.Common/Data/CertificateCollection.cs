@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using EVEMon.Common.Attributes;
+﻿using EVEMon.Common.Attributes;
 using EVEMon.Common.Collections;
 using EVEMon.Common.Models;
+using System.Linq;
 
 namespace EVEMon.Common.Data
 {
@@ -18,12 +18,12 @@ namespace EVEMon.Common.Data
         internal CertificateCollection(Character character)
         {
             // Builds the list
-            foreach (CertificateClass certClass in character.CertificateCategories.SelectMany(
-                category => category, (category, certClass) => new { category, certClass }).Select(
-                    category => category.certClass))
-            {
-                Items[certClass.Certificate.ID] = certClass.Certificate;
-            }
+            foreach (var certGroup in character.CertificateCategories)
+                foreach (var certClass in certGroup)
+                {
+                    var certificate = certClass.Certificate;
+                    Items[certificate.ID] = certificate;
+                }
         }
 
         /// <summary>
@@ -38,14 +38,8 @@ namespace EVEMon.Common.Data
         /// </summary>
         internal void Initialize()
         {
-            while (true)
-            {
-                bool updatedAnything = Items.Values
-                    .Aggregate(false, (current, cert) => current | cert.TryUpdateCertificateStatus());
-
-                if (!updatedAnything)
-                    break;
-            }
+            while (Items.Values.Aggregate(false, (current, cert) => current | cert.
+                TryUpdateCertificateStatus())) ;
         }
     }
 }
