@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using EVEMon.Common;
-using EVEMon.Common.Constants;
+﻿using EVEMon.Common.Constants;
 using EVEMon.Common.Controls;
-using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Factories;
 using EVEMon.Common.Models;
 using EVEMon.Common.Properties;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace EVEMon.ApiCredentialsManagement
 {

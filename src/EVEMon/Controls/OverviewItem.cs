@@ -112,6 +112,7 @@ namespace EVEMon.Controls
             lblSkillInTraining.Font = FontFactory.GetFont("Tahoma", m_regularFontSize);
             lblCompletionTime.Font = FontFactory.GetFont("Tahoma", m_regularFontSize);
             lblSkillQueueTrainingTime.Font = FontFactory.GetFont("Tahoma", m_regularFontSize);
+            lblLocation.Font = FontFactory.GetFont("Tahoma", m_regularFontSize);
 
             // Initializes the portrait
             pbCharacterPortrait.Hide();
@@ -272,16 +273,15 @@ namespace EVEMon.Controls
             m_showCompletionTime = !m_isTooltip || trayPopupSettings.ShowCompletionTime;
             m_showRemainingTime = !m_isTooltip || trayPopupSettings.ShowRemainingTime;
             m_showSkillInTraining = !m_isTooltip || trayPopupSettings.ShowSkillInTraining;
-            m_showWalletBalance = m_isTooltip
-                ? trayPopupSettings.ShowWallet
-                : mainWindowSettings.ShowOverviewWallet;
-            m_showSkillpoints = !m_isTooltip && mainWindowSettings.ShowOverviewTotalSkillpoints;
-            m_showPortrait = m_isTooltip
-                ? trayPopupSettings.ShowPortrait
-                : mainWindowSettings.ShowOverviewPortrait;
-            m_showSkillQueueTrainingTime = m_isTooltip
-                ? trayPopupSettings.ShowSkillQueueTrainingTime
-                : mainWindowSettings.ShowOverviewSkillQueueTrainingTime;
+            m_showWalletBalance = m_isTooltip ? trayPopupSettings.ShowWallet :
+                mainWindowSettings.ShowOverviewWallet;
+            m_showSkillpoints = !m_isTooltip && mainWindowSettings.
+                ShowOverviewTotalSkillpoints;
+            m_showPortrait = m_isTooltip ? trayPopupSettings.ShowPortrait :
+                mainWindowSettings.ShowOverviewPortrait;
+            m_showSkillQueueTrainingTime = m_isTooltip ? trayPopupSettings.
+                ShowSkillQueueTrainingTime : mainWindowSettings.
+                ShowOverviewSkillQueueTrainingTime;
 
             // Update colors
             UpdateContrastColor();
@@ -401,12 +401,13 @@ namespace EVEMon.Controls
         /// <returns></returns>
         private void UpdateVisibilities()
         {
-            lblRemainingTime.Visible = m_hasRemainingTime & m_showRemainingTime;
-            lblCompletionTime.Visible = m_hasCompletionTime & m_showCompletionTime;
-            lblSkillInTraining.Visible = m_hasSkillInTraining & m_showSkillInTraining;
-            lblSkillQueueTrainingTime.Visible = m_hasSkillQueueTrainingTime & m_showSkillQueueTrainingTime;
+            lblRemainingTime.Visible = m_hasRemainingTime && m_showRemainingTime;
+            lblCompletionTime.Visible = m_hasCompletionTime && m_showCompletionTime;
+            lblSkillInTraining.Visible = m_hasSkillInTraining && m_showSkillInTraining;
+            lblSkillQueueTrainingTime.Visible = m_hasSkillQueueTrainingTime && m_showSkillQueueTrainingTime;
             lblBalance.Visible = m_showWalletBalance;
             lblTotalSkillPoints.Visible = m_showSkillpoints;
+            lblLocation.Visible = m_showSkillInTraining;
         }
 
         /// <summary>
@@ -431,60 +432,51 @@ namespace EVEMon.Controls
         {
             CCPCharacter ccpCharacter = Character as CCPCharacter;
 
+            lblSkillQueueTrainingTime.ForeColor = m_settingsForeColor;
+            // Determine the character's system location
+            int locID = Character?.LastKnownLocation?.SolarSystemID ?? 0;
+            string text = string.Empty, locText;
+            if (locID == 0)
+                locText = EveMonConstants.UnknownText + " Location";
+            else
+                locText = StaticGeography.GetSolarSystemName(locID);
+            lblLocation.Text = locText;
+
             // Current character isn't a CCP character, so can't have a Queue
-            if (ccpCharacter == null)
-                return;
-
-            if (ccpCharacter.SkillQueue.IsPaused)
+            if (ccpCharacter != null && !ccpCharacter.SkillQueue.IsPaused)
             {
-                lblSkillQueueTrainingTime.Text = String.Empty;
-                return;
-            }
+                TimeSpan skillQueueEndTime = ccpCharacter.SkillQueue.EndTime.Subtract(
+                    DateTime.UtcNow);
+                TimeSpan timeLeft = SkillQueue.WarningThresholdTimeSpan.Subtract(
+                    skillQueueEndTime);
 
-            TimeSpan skillQueueEndTime = ccpCharacter.SkillQueue.EndTime.Subtract(DateTime.UtcNow);
-            TimeSpan timeLeft = SkillQueue.WarningThresholdTimeSpan.Subtract(skillQueueEndTime);
-
-            // Negative time ?
-            // Skill queue is populated with more than a day
-            if (timeLeft < TimeSpan.Zero)
-            {
-                // More than one entry in queue ? Display total queue remaining time
-                if (ccpCharacter.SkillQueue.Count > 1)
+                // Negative time: Skill queue is populated with more than a day
+                if (timeLeft < TimeSpan.Zero)
                 {
-                    lblSkillQueueTrainingTime.ForeColor = m_settingsForeColor;
-                    lblSkillQueueTrainingTime.Text =
-                        $"Queue ends in {ccpCharacter.SkillQueue.EndTime.ToRemainingTimeShortDescription(DateTimeKind.Utc)}";
-
-                    return;
+                    // More than one entry in queue ? Display total queue remaining time
+                    if (ccpCharacter.SkillQueue.Count > 1)
+                    {
+                        text = "Queue ends in " + ccpCharacter.SkillQueue.EndTime.
+                            ToRemainingTimeShortDescription(DateTimeKind.Utc);
+                    }
                 }
-
-                // We don't display anything
-                lblSkillQueueTrainingTime.Text = String.Empty;
-                return;
+                // Skill queue is empty ?
+                else if (timeLeft > SkillQueue.WarningThresholdTimeSpan)
+                {
+                    lblSkillQueueTrainingTime.ForeColor = Color.Red;
+                    text = "Skill queue is empty";
+                }
+                else if (timeLeft != TimeSpan.Zero)
+                {
+                    // Less than one minute? Display seconds else display time without seconds
+                    string endTimeText = skillQueueEndTime.ToDescriptiveText(
+                        DescriptiveTextOptions.IncludeCommas, skillQueueEndTime < TimeSpan.
+                        FromMinutes(1));
+                    lblSkillQueueTrainingTime.ForeColor = Color.Red;
+                    text = $"Queue ends in {endTimeText}";
+                }
             }
-
-            // Training completed ?
-            if (timeLeft == TimeSpan.Zero)
-            {
-                // We don't display anything
-                lblSkillQueueTrainingTime.Text = String.Empty;
-                return;
-            }
-
-            // Skill queue is empty ?
-            if (timeLeft > SkillQueue.WarningThresholdTimeSpan)
-            {
-                lblSkillQueueTrainingTime.Text = @"Skill queue is empty";
-                return;
-            }
-
-            // Less than one minute ? Display seconds else display time without seconds
-            string endTimeText = skillQueueEndTime < TimeSpan.FromMinutes(1)
-                ? skillQueueEndTime.ToDescriptiveText(DescriptiveTextOptions.IncludeCommas)
-                : skillQueueEndTime.ToDescriptiveText(DescriptiveTextOptions.IncludeCommas, includeSeconds: false);
-
-            lblSkillQueueTrainingTime.ForeColor = Color.Red;
-            lblSkillQueueTrainingTime.Text = $"Queue ends in {endTimeText}";
+            lblSkillQueueTrainingTime.Text = text;
         }
 
         #endregion
@@ -617,13 +609,9 @@ namespace EVEMon.Controls
             int margin = 10;
             if (tooltip)
             {
-                margin = portraitSize <= PortraitSizes.x48.GetDefaultValue()
-                    ? 2
-                    : portraitSize <= PortraitSizes.x64.GetDefaultValue()
-                        ? 4
-                        : portraitSize <= PortraitSizes.x80.GetDefaultValue()
-                            ? 6
-                            : margin;
+                margin = portraitSize <= PortraitSizes.x48.GetDefaultValue() ? 2 :
+                    (portraitSize <= PortraitSizes.x64.GetDefaultValue() ? 4 :
+                    (portraitSize <= PortraitSizes.x80.GetDefaultValue() ? 6 : margin));
             }
 
             // Label height

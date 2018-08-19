@@ -323,8 +323,8 @@ namespace EVEMon.SkillPlanner
         {
             // Set button check state according to skills 'owned' property;
             // this will also trigger a check through the character's assets
-            ownsBookToolStripButton.Checked = m_selectedSkill.IsOwned |
-                                              (m_selectedSkill.HasBookInAssets && !m_selectedSkill.IsKnown);
+            ownsBookToolStripButton.Checked = m_selectedSkill.IsOwned | (m_selectedSkill.
+                HasBookInAssets && !m_selectedSkill.IsKnown);
 
             skillSelectControl.UpdateContent();
 
@@ -338,10 +338,9 @@ namespace EVEMon.SkillPlanner
             }
 
             // Update the Owned Skill books window if open
-            OwnedSkillBooksWindow ownedSkillBooksWindow =
-                WindowsFactory.GetByTag<OwnedSkillBooksWindow, Character>((Character)m_plan.Character);
-
-            ownedSkillBooksWindow?.UpdateList();
+            if (m_plan != null)
+                WindowsFactory.GetByTag<OwnedSkillBooksWindow, Character>(m_plan.Character as
+                    Character)?.UpdateList();
         }
 
         #endregion
@@ -443,8 +442,8 @@ namespace EVEMon.SkillPlanner
         private void showSkillExplorerMenu_Click(object sender, EventArgs e)
         {
             // Open the skill explorer
-            SkillExplorerWindow.ShowSkillExplorerWindow(skillSelectControl.Character, m_plan)
-                .ShowSkillInExplorer(m_selectedSkill);
+            SkillExplorerWindow.ShowSkillExplorerWindow(skillSelectControl.Character, m_plan).
+                ShowSkillInExplorer(m_selectedSkill);
         }
 
         #endregion

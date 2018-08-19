@@ -434,14 +434,12 @@ namespace EVEMon.SkillPlanner
         /// <exception cref="System.ArgumentNullException">skill</exception>
         internal void ShowSkillInBrowser(Skill skill)
         {
-            skill.ThrowIfNull(nameof(skill));
-
             // Quit if it's an "Unknown" skill
-            if (skill.ID == Int32.MaxValue)
-                return;
-
-            ShowSkillBrowser();
-            skillBrowser.SelectedSkill = skill;
+            if (skill != null && skill.ID != int.MaxValue && skill.ID != 0)
+            {
+                ShowSkillBrowser();
+                skillBrowser.SelectedSkill = skill;
+            }
         }
 
         /// <summary>
