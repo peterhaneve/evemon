@@ -332,6 +332,11 @@ namespace EVEMon.SkillPlanner
             PlanWindow planWindow = ParentForm as PlanWindow;
             planWindow?.UpdatePlanEditorSkillSelection();
 
+            if (m_plan == null)
+            {
+                return;
+            }
+
             // Update the Owned Skill books window if open
             if (m_plan != null)
                 WindowsFactory.GetByTag<OwnedSkillBooksWindow, Character>(m_plan.Character as

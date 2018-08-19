@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using EVEMon.Common.Constants;
@@ -146,7 +147,7 @@ namespace EVEMon.Common.Models.Extended
             case "AMOUNT":
             case "ISKVALUE":
                 // Format as ISK amount
-                if (decimal.TryParse(value, out amount))
+                if (decimal.TryParse(value,NumberStyles.Number, CultureInfo.InvariantCulture, out amount))
                     parsedDict[key] = amount.ToString("N2");
                 break;
             case "ENDDATE":
