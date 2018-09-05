@@ -67,37 +67,37 @@ namespace EVEMon.Common.Serialization.Esi
             {
                 switch (State)
                 {
-                case 1:
-                    return "closed";
-                case 2:
-                    return "expired";
-                case 3:
-                    return "cancelled";
-                default:
-                    // Active in ESI is simply not shown
-                    return default(string);
+                    case 1:
+                        return "closed";
+                    case 2:
+                        return "expired";
+                    case 3:
+                        return "cancelled";
+                    default:
+                        // Active in ESI is simply not shown
+                        return default(string);
                 }
             }
             set
             {
                 switch (value)
                 {
-                case "active":
-                case "":
-                case null:
-                    State = 0;
-                    break;
-                case "closed":
-                    State = 1;
-                    break;
-                case "expired":
-                    State = 2;
-                    break;
-                case "cancelled":
-                    State = 3;
-                    break;
-                default:
-                    break;
+                    case "active":
+                    case "":
+                    case null:
+                        State = 0;
+                        break;
+                    case "closed":
+                        State = 1;
+                        break;
+                    case "expired":
+                        State = 2;
+                        break;
+                    case "cancelled":
+                        State = 3;
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -126,21 +126,21 @@ namespace EVEMon.Common.Serialization.Esi
                 // Converts to legacy XML value
                 switch (value)
                 {
-                case "station":
-                    Range = -1;
-                    break;
-                case "solarsystem":
-                    Range = 0;
-                    break;
-                case "region":
-                    Range = EveConstants.RegionRange;
-                    break;
-                default:
-                    // Cannot actually fail, but the exception would suck
-                    if (value.TryParseInv(out jumps) && jumps > 0 && jumps < EveConstants.
-                            RegionRange)
-                        Range = jumps;
-                    break;
+                    case "station":
+                        Range = -1;
+                        break;
+                    case "solarsystem":
+                        Range = 0;
+                        break;
+                    case "region":
+                        Range = EveConstants.RegionRange;
+                        break;
+                    default:
+                        // Cannot actually fail, but the exception would suck
+                        if (value.TryParseInv(out jumps) && jumps > 0 && jumps < EveConstants.
+                                RegionRange)
+                            Range = jumps;
+                        break;
                 }
             }
         }
@@ -179,6 +179,14 @@ namespace EVEMon.Common.Serialization.Esi
         [DataMember(Name = "is_buy_order")]
         public bool IsBuyOrder { get; set; }
 
+        // veg Fix #3
+
+        /// <summary>
+        /// True if this is a corporation order, false otherwise.
+        /// </summary>
+        [DataMember(Name = "is_corporation")]
+        public bool IsCorporation { get; set; }
+
         /// <summary>
         /// The character ID who issued this order.
         /// </summary>
@@ -196,7 +204,7 @@ namespace EVEMon.Common.Serialization.Esi
                 return issued;
             }
         }
-        
+
         [DataMember(Name = "issued")]
         private string IssuedJson
         {

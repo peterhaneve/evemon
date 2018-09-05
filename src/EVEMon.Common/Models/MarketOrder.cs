@@ -36,12 +36,16 @@ namespace EVEMon.Common.Models
         /// character.</param>
         /// <param name="character">The owning character.</param>
         /// <exception cref="System.ArgumentNullException">src</exception>
-        protected MarketOrder(EsiOrderListItem src, IssuedFor issuedFor,
-            CCPCharacter character)
+            protected MarketOrder(EsiOrderListItem src, IssuedFor issuedFor,
+                CCPCharacter character)
         {
             src.ThrowIfNull(nameof(src));
 
             PopulateOrderInfo(src, issuedFor);
+
+                // veg Fix #1
+                issuedFor = src.IsCorporation || src.IssuedBy == 0  ? IssuedFor.Corporation : IssuedFor.Character;
+
             LastStateChange = DateTime.UtcNow;
             m_character = character;
             m_state = GetState(src);
@@ -275,7 +279,8 @@ namespace EVEMon.Common.Models
             MinVolume = src.MinVolume;
             Duration = src.Duration;
             Issued = src.Issued;
-            IssuedFor = issuedFor;
+            // veg Fix #2
+            IssuedFor = src.IsCorporation || src.IssuedBy == 0 ? IssuedFor.Corporation : IssuedFor.Character;
             m_stationID = src.StationID;
             UpdateStation();
 
