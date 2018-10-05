@@ -5,16 +5,16 @@ using EVEMon.Common.Collections;
 using EVEMon.Common.Enumerations;
 using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Interfaces;
-using EVEMon.Common.Serialization.Eve;
 using EVEMon.Common.Serialization.Settings;
 using EVEMon.Common.Serialization.Esi;
+using System.Collections.ObjectModel;
 
 namespace EVEMon.Common.Models.Collections
 {
     /// <summary>
     /// A collection of industry jobs.
     /// </summary>
-    public sealed class IndustryJobCollection : ReadonlyCollection<IndustryJob>
+    public sealed class IndustryJobCollection : ReadOnlyDictionary<long, IndustryJob>
     {
         private readonly CCPCharacter m_ccpCharacter;
 
@@ -23,6 +23,7 @@ namespace EVEMon.Common.Models.Collections
         /// </summary>
         /// <param name="character">The character.</param>
         internal IndustryJobCollection(CCPCharacter character)
+            : base(new Dictionary<long, IndustryJob>())
         {
             m_ccpCharacter = character;
             EveMonClient.TimerTick += EveMonClient_TimerTick;
@@ -34,6 +35,20 @@ namespace EVEMon.Common.Models.Collections
         internal void Dispose()
         {
             EveMonClient.TimerTick -= EveMonClient_TimerTick;
+        }
+
+        /// <summary>
+        /// Merges the jobs from this and another job collection, returns the new collection.
+        /// Does not modify this collection.
+        /// </summary>
+        /// <param name="jobs">The other job collection.</param>
+        /// <returns>A new job collection.</returns>
+        public IndustryJobCollection Merge(IEnumerable<KeyValuePair<long, IndustryJob>> jobs)
+        {
+            IndustryJobCollection nij = new IndustryJobCollection(m_ccpCharacter);
+            nij.Dictionary.AddRange(Dictionary);
+            nij.Dictionary.AddRange(jobs);
+            return nij;
         }
 
         /// <summary>
@@ -62,9 +77,12 @@ namespace EVEMon.Common.Models.Collections
         /// <param name="src"></param>
         internal void Import(IEnumerable<SerializableJob> src)
         {
-            Items.Clear();
+            Dictionary.Clear();
             foreach (SerializableJob srcJob in src)
-                Items.Add(new IndustryJob(srcJob) { InstallerID = m_ccpCharacter.CharacterID });
+            {
+                IndustryJob ij = new IndustryJob(srcJob) { InstallerID = m_ccpCharacter.CharacterID };
+                Dictionary.Add(ij.ID, ij);
+            }
         }
 
         /// <summary>
@@ -76,31 +94,43 @@ namespace EVEMon.Common.Models.Collections
         internal void Import(IEnumerable<EsiJobListItem> src, IssuedFor issuedFor)
         {
             // Mark all jobs for deletion, jobs found in the API will be unmarked
-            foreach (IndustryJob job in Items)
+            foreach (IndustryJob job in Dictionary.Values)
+            {
                 job.MarkedForDeletion = true;
-            var newJobs = new LinkedList<IndustryJob>();
+            }
+            var newJobs = new Dictionary<long, IndustryJob>();
             var now = DateTime.UtcNow;
             // Import the jobs from the API
             foreach (EsiJobListItem job in src)
             {
+                if(Dictionary.ContainsKey(job.JobID))
+                {
+                    // We already have this job, try to update it.
+                    if (Dictionary[job.JobID].TryImport(job, issuedFor, m_ccpCharacter))
+                    {
+                        // Job updated.
+                        continue;
+                    }
+                }
                 DateTime limit = job.EndDate.AddDays(IndustryJob.MaxEndedDays);
                 // For jobs which are not yet ended, or are active and not ready (active is
                 // defined as having an empty completion date), and are not already in list
                 if (limit >= now || (job.CompletedDate == DateTime.MinValue && job.Status !=
-                    CCPJobCompletedStatus.Ready) && !Items.Any(x => x.TryImport(job, issuedFor,
-                    m_ccpCharacter)))
+                    CCPJobCompletedStatus.Ready))
                 {
                     // Only add jobs with valid items
                     var ij = new IndustryJob(job, issuedFor);
                     if (ij.InstalledItem != null && ij.OutputItem != null)
-                        newJobs.AddLast(ij);
+                    {
+                        newJobs.Add(ij.ID, ij);
+                    }
                 }
             }
             // Add the items that are no longer marked for deletion
-            newJobs.AddRange(Items.Where(x => !x.MarkedForDeletion));
+            newJobs.AddRange(Dictionary.Where(x => !x.Value.MarkedForDeletion));
             // Replace the old list with the new one
-            Items.Clear();
-            Items.AddRange(newJobs);
+            Dictionary.Clear();
+            Dictionary.AddRange(newJobs);
         }
 
         /// <summary>
@@ -108,7 +138,7 @@ namespace EVEMon.Common.Models.Collections
         /// </summary>
         /// <returns></returns>
         /// <remarks>Used to export only the corporation jobs issued by the character.</remarks>
-        internal IEnumerable<SerializableJob> ExportOnlyIssuedByCharacter() => Items.Where(
+        internal IEnumerable<SerializableJob> ExportOnlyIssuedByCharacter() => Dictionary.Values.Where(
             job => job.InstallerID == m_ccpCharacter.CharacterID).Select(job => job.Export());
 
         /// <summary>
@@ -116,7 +146,7 @@ namespace EVEMon.Common.Models.Collections
         /// </summary>
         /// <returns>List of serializable jobs.</returns>
         /// <remarks>Used to export all jobs of the collection.</remarks>
-        internal IEnumerable<SerializableJob> Export() => Items.Select(job => job.Export());
+        internal IEnumerable<SerializableJob> Export() => Dictionary.Values.Select(job => job.Export());
 
         /// <summary>
         /// Notify the user on a job completion.
@@ -124,12 +154,12 @@ namespace EVEMon.Common.Models.Collections
         private void UpdateOnTimerTick()
         {
             bool isCorporateMonitor = true;
-            if (Items.Count > 0)
+            if (Dictionary.Count > 0)
             {
                 // Add the not notified "Ready" jobs to the completed list
                 var jobsCompleted = new LinkedList<IndustryJob>();
                 var characterJobs = new LinkedList<IndustryJob>();
-                foreach (IndustryJob job in Items)
+                foreach (IndustryJob job in Dictionary.Values)
                 {
                     if (job.IsActive && job.TTC.Length == 0 && !job.NotificationSend)
                     {

@@ -278,7 +278,7 @@ namespace EVEMon.CharacterMonitoring
             lvJobs.Visible = false;
             industryExpPanelControl.Visible = false;
 
-            Jobs = Character?.IndustryJobs;
+            Jobs = Character?.IndustryJobs.Values;
             Columns = Settings.UI.MainWindow.IndustryJobs.Columns;
             Grouping = Character?.UISettings.JobsGroupBy;
             TextFilter = String.Empty;
@@ -1123,7 +1123,7 @@ namespace EVEMon.CharacterMonitoring
             if (Character == null || e.Character != Character)
                 return;
 
-            Jobs = Character.IndustryJobs;
+            Jobs = Character.IndustryJobs.Values;
             UpdateColumns();
         }
 

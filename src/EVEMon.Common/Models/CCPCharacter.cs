@@ -206,8 +206,8 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the collection of industry jobs.
         /// </summary>
-        public IEnumerable<IndustryJob> IndustryJobs => CharacterIndustryJobs.Concat(
-            CorporationIndustryJobs.Where(job => job.InstallerID == CharacterID));
+        public IndustryJobCollection IndustryJobs => CharacterIndustryJobs.Merge(
+            CorporationIndustryJobs.Where(job => job.Value.InstallerID == CharacterID));
 
         /// <summary>
         /// Gets or sets the character industry jobs.
@@ -886,8 +886,8 @@ namespace EVEMon.Common.Models
                 m_jobsCompletedForCharacter.AddRange(e.CompletedJobs);
 
                 // If character has completed corporation issued jobs, wait until those are gathered too
-                if (!CorporationIndustryJobs.Any(job => job.ActiveJobState ==
-                        ActiveJobState.Ready && !job.NotificationSend))
+                if (!CorporationIndustryJobs.Any(job => job.Value.ActiveJobState ==
+                        ActiveJobState.Ready && !job.Value.NotificationSend))
                 {
                     EveMonClient.Notifications.NotifyCharacterIndustryJobCompletion(this,
                         m_jobsCompletedForCharacter);
