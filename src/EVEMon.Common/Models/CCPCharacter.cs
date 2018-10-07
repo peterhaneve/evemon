@@ -883,11 +883,21 @@ namespace EVEMon.Common.Models
         {
             if (e.Character == this)
             {
-                m_jobsCompletedForCharacter.AddRange(e.CompletedJobs);
+                // veg Fix 4
+                foreach (IndustryJob job in e.CompletedJobs)
+                {
+                    if (!m_jobsCompletedForCharacter.Any(p => p.ID == job.ID))
+                    {
+                        m_jobsCompletedForCharacter.Add(job);
+                    }
+                }
 
                 // If character has completed corporation issued jobs, wait until those are gathered too
-                if (!CorporationIndustryJobs.Any(job => job.ActiveJobState ==
-                        ActiveJobState.Ready && !job.NotificationSend))
+                // 
+                // veg Fix 5
+                // 
+                if (m_jobsCompletedForCharacter.Any(job => job.ActiveJobState ==
+                                        ActiveJobState.Ready && !job.NotificationSend))
                 {
                     EveMonClient.Notifications.NotifyCharacterIndustryJobCompletion(this,
                         m_jobsCompletedForCharacter);
