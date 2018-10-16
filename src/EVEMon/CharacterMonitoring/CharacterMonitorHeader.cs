@@ -67,6 +67,8 @@ namespace EVEMon.CharacterMonitoring
                 return;
 
             // Subscribe to events
+            EveMonClient.TimerTick += EveMonClient_TimerTick;
+            EveMonClient.SettingsChanged += EveMonClient_SettingsChanged;
             EveMonClient.CharacterUpdated += EveMonClient_CharacterUpdated;
             EveMonClient.CharacterInfoUpdated += EveMonClient_CharacterInfoUpdated;
             EveMonClient.MarketOrdersUpdated += EveMonClient_MarketOrdersUpdated;
@@ -98,12 +100,15 @@ namespace EVEMon.CharacterMonitoring
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnDisposed(object sender, EventArgs e)
         {
+            EveMonClient.TimerTick -= EveMonClient_TimerTick;
+            EveMonClient.SettingsChanged -= EveMonClient_SettingsChanged;
             EveMonClient.CharacterUpdated -= EveMonClient_CharacterUpdated;
             EveMonClient.CharacterInfoUpdated -= EveMonClient_CharacterInfoUpdated;
             EveMonClient.MarketOrdersUpdated -= EveMonClient_MarketOrdersUpdated;
             EveMonClient.AccountStatusUpdated -= EveMonClient_AccountStatusUpdated;
             EveMonClient.ConquerableStationListUpdated -= EveMonClient_ConquerableStationListUpdated;
             EveMonClient.CharacterLabelChanged -= EveMonClient_CharacterLabelChanged;
+            Disposed -= OnDisposed;
         }
 
         #endregion
@@ -654,6 +659,29 @@ namespace EVEMon.CharacterMonitoring
 
 
         #region Global Events
+        /// <summary>
+        /// Handles the TimerTick event of the EveMonClient control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void EveMonClient_TimerTick(object sender, EventArgs e)
+        {
+            // No need to do this if control is not visible
+            if (Visible)
+                UpdateFrequentControls();
+        }
+
+        /// <summary>
+        /// Handles the SettingsChanged event of the EveMonClient control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void EveMonClient_SettingsChanged(object sender, EventArgs e)
+        {
+            // No need to do this if control is not visible
+            if (Visible)
+                UpdateInfrequentControls();
+        }
 
         /// <summary>
         /// Handles the CharacterLabelChanged event of the EveMonClient  control.
@@ -700,7 +728,9 @@ namespace EVEMon.CharacterMonitoring
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void EveMonClient_ConquerableStationListUpdated(object sender, EventArgs e)
         {
-            UpdateInfoControls();
+            // No need to do this if control is not visible
+            if (Visible)
+                UpdateInfoControls();
         }
 
         /// <summary>
