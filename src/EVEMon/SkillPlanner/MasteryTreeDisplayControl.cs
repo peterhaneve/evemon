@@ -743,10 +743,15 @@ namespace EVEMon.SkillPlanner
             // When a skill is selected, we select it in the skill browser
             else
             {
-                Skill skill = ((SkillLevel)treeView.SelectedNode?.Tag)?.Skill;
+                SkillLevel skillLevel = treeView.SelectedNode?.Tag as SkillLevel;
 
-                // Open the skill browser
-                PlanWindow.ShowPlanWindow(m_character, m_plan).ShowSkillInBrowser(skill);
+                if (skillLevel != null)
+                {
+                    Skill skill = skillLevel.Skill;
+
+                    // Open the skill browser
+                    PlanWindow.ShowPlanWindow(m_character, m_plan).ShowSkillInBrowser(skill);
+                }
             }
         }
 
