@@ -90,8 +90,10 @@ namespace EVEMon.Common.Models.Collections
                 return;
 
             // Add the not notified idle pins to the completed list
+            // Updated 3/10/2019, removed check on Pin state = Idle, as the state doesn't get updated unless the planetary column is visible
+            // Left in the check on PinState not equal to none as that prevents alerts popping for non-activatable items (storages, etc.)
             List<PlanetaryPin> pinsCompleted = Items.SelectMany(x => x.Pins).Where(
-                pin => pin.State == PlanetaryPinState.Idle && pin.TTC.Length == 0 && !pin.NotificationSend).ToList();
+                pin => pin.State != PlanetaryPinState.None && pin.TTC.Length == 0 && !pin.NotificationSend).ToList();
 
             pinsCompleted.ForEach(pin => pin.NotificationSend = true);
 
