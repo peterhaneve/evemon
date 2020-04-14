@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Xml.Serialization;
+using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Enumerations.UISettings;
 using EVEMon.Common.SettingsObjects;
 
@@ -24,6 +25,7 @@ namespace EVEMon.Common.Serialization.Settings
             m_monitoredCharacters = new Collection<MonitoredCharacterSettings>();
             SSOClientID = string.Empty;
             SSOClientSecret = string.Empty;
+            APIMethodAccess = CCPAPIMethodsEnum.BasicCharacterFeatures;
             CloudStorageServiceProvider = new CloudStorageServiceProviderSettings();
             PortableEveInstallations = new PortableEveInstallationsSettings();
             Notifications = new NotificationSettings();
@@ -37,6 +39,9 @@ namespace EVEMon.Common.Serialization.Settings
             G15 = new G15Settings();
             UI = new UISettings();
         }
+
+        [XmlAttribute("apiMethodAccess")]
+        public CCPAPIMethodsEnum APIMethodAccess { get; set; }
 
         [XmlAttribute("clientID")]
         public string SSOClientID { get; set; }

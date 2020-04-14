@@ -37,6 +37,7 @@ namespace EVEMon.Common
         /// </summary>
         static Settings()
         {
+            APIMethodAccess = CCPAPIMethodsEnum.BasicCharacterFeatures;
             SSOClientID = string.Empty;
             SSOClientSecret = string.Empty;
             UI = new UISettings();
@@ -71,6 +72,13 @@ namespace EVEMon.Common
 
 
         #region The very settings
+
+        /// <summary>
+        /// Gets or sets the API method access permissions. Note this controls both the SSO scopes (what permissions we request,
+        /// <see cref="Constants.NetworkConstants.SSOScopes"/>) and the internal API access mask (used to control features of our
+        /// UI, <see cref="CCPAPIMethodsEnum"/>).
+        /// </summary>
+        public static CCPAPIMethodsEnum APIMethodAccess { get; private set; }
 
         /// <summary>
         /// Gets or sets the SSO client ID.
@@ -191,6 +199,7 @@ namespace EVEMon.Common
             try
             {
                 // API settings
+                APIMethodAccess = s_settings.APIMethodAccess;
                 SSOClientID = s_settings.SSOClientID ?? string.Empty;
                 SSOClientSecret = s_settings.SSOClientSecret ?? string.Empty;
 
@@ -353,6 +362,7 @@ namespace EVEMon.Common
         {
             SerializableSettings serial = new SerializableSettings
             {
+                APIMethodAccess = APIMethodAccess,
                 SSOClientID = SSOClientID,
                 SSOClientSecret = SSOClientSecret,
                 Revision = Revision,

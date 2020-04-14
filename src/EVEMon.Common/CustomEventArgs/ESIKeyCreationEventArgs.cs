@@ -18,14 +18,13 @@ namespace EVEMon.Common.CustomEventArgs
         /// <param name="refreshToken">The refresh token.</param>
         /// <param name="charInfo">The ESI key info.</param>
         /// <exception cref="System.ArgumentNullException">charInfo</exception>
-        public ESIKeyCreationEventArgs(long id, string refreshToken, JsonResult<EsiAPITokenInfo> charInfo)
+        public ESIKeyCreationEventArgs(long id, ulong accessMask, string refreshToken, JsonResult<EsiAPITokenInfo> charInfo)
         {
             charInfo.ThrowIfNull(nameof(charInfo));
 
             ID = id;
             RefreshToken = refreshToken;
-            // At some point the ability to use limited scopes would be nice
-            AccessMask = ulong.MaxValue;
+            AccessMask = accessMask;
 
             if (charInfo.HasError)
                 CCPError = new CCPAPIError()

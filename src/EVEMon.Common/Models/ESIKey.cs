@@ -355,12 +355,12 @@ namespace EVEMon.Common.Models
         /// <param name="id">The id.</param>
         /// <param name="accessResponse">The access and refresh token.</param>
         /// <param name="callback">The callback.</param>
-        public static void TryAddOrUpdateAsync(long id, AccessResponse accessResponse,
+        public static void TryAddOrUpdateAsync(long id, ulong accessMask, AccessResponse accessResponse,
                                                EventHandler<ESIKeyCreationEventArgs> callback)
         {
             accessResponse.ThrowIfNull(nameof(accessResponse));
             SSOAuthenticationService.GetTokenInfo(accessResponse.AccessToken,
-                (result) => callback(null, new ESIKeyCreationEventArgs(id, accessResponse.
+                (result) => callback(null, new ESIKeyCreationEventArgs(id, accessMask, accessResponse.
                 RefreshToken, result)));
         }
         
@@ -459,7 +459,7 @@ namespace EVEMon.Common.Models
         /// <returns></returns>
         public void TryUpdateAsync(AccessResponse accessResponse, EventHandler<ESIKeyCreationEventArgs> callback)
         {
-            TryAddOrUpdateAsync(ID, accessResponse, callback);
+            TryAddOrUpdateAsync(ID, AccessMask, accessResponse, callback);
         }
 
         /// <summary>

@@ -1,4 +1,3 @@
-using System;
 using EVEMon.Common.Controls.MultiPanel;
 
 namespace EVEMon.SettingsUI
@@ -128,6 +127,7 @@ namespace EVEMon.SettingsUI
             this.mainWindowPage = new EVEMon.Common.Controls.MultiPanel.MultiPanelPage();
             this.OverviewGroupBox = new System.Windows.Forms.GroupBox();
             this.overviewPanel = new System.Windows.Forms.Panel();
+            this.extraInfoComboBox = new System.Windows.Forms.ComboBox();
             this.cbShowSkillpointsOnOverview = new System.Windows.Forms.CheckBox();
             this.overviewPortraitSizeComboBox = new System.Windows.Forms.ComboBox();
             this.skillPlannerPage = new EVEMon.Common.Controls.MultiPanel.MultiPanelPage();
@@ -151,6 +151,12 @@ namespace EVEMon.SettingsUI
             this.proxyPortTextBox = new System.Windows.Forms.TextBox();
             this.proxyAuthenticationButton = new System.Windows.Forms.Button();
             this.proxyHttpHostTextBox = new System.Windows.Forms.TextBox();
+            this.esiApiMethodPermissionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.esiApiPermissionsLabel = new System.Windows.Forms.Label();
+            this.basicMethodsRadioButton = new System.Windows.Forms.RadioButton();
+            this.basicMethodsLabel = new System.Windows.Forms.Label();
+            this.advancedMethodsRadioButton = new System.Windows.Forms.RadioButton();
+            this.advancedMethodsLabel = new System.Windows.Forms.Label();
             this.emailNotificationsPage = new EVEMon.Common.Controls.MultiPanel.MultiPanelPage();
             this.mailNotificationCheckBox = new System.Windows.Forms.CheckBox();
             this.emailNotificationsControl = new EVEMon.SettingsUI.EmailNotificationsControl();
@@ -225,7 +231,6 @@ namespace EVEMon.SettingsUI
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.settingsFileStorageGroupBox = new System.Windows.Forms.GroupBox();
             this.settingsFileStorageControl = new EVEMon.SettingsUI.SettingsFileStorageControl();
-            this.extraInfoComboBox = new System.Windows.Forms.ComboBox();
             this.systemTrayIconGroupBox.SuspendLayout();
             this.bottomPanel.SuspendLayout();
             this.CharacterMonitorGroupBox.SuspendLayout();
@@ -244,6 +249,7 @@ namespace EVEMon.SettingsUI
             this.esiSettingsGroupBox.SuspendLayout();
             this.ProxyServerGroupBox.SuspendLayout();
             this.customProxyPanel.SuspendLayout();
+            this.esiApiMethodPermissionsGroupBox.SuspendLayout();
             this.emailNotificationsPage.SuspendLayout();
             this.notificationsPage.SuspendLayout();
             this.trayIconPage.SuspendLayout();
@@ -1189,6 +1195,19 @@ namespace EVEMon.SettingsUI
             this.overviewPanel.Size = new System.Drawing.Size(393, 85);
             this.overviewPanel.TabIndex = 32;
             // 
+            // extraInfoComboBox
+            // 
+            this.extraInfoComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.extraInfoComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.extraInfoComboBox.Items.AddRange(new object[] {
+            "No Extra Info",
+            "Show Location",
+            "Show Jobs"});
+            this.extraInfoComboBox.Location = new System.Drawing.Point(274, 18);
+            this.extraInfoComboBox.Name = "extraInfoComboBox";
+            this.extraInfoComboBox.Size = new System.Drawing.Size(116, 21);
+            this.extraInfoComboBox.TabIndex = 36;
+            // 
             // cbShowSkillpointsOnOverview
             // 
             this.cbShowSkillpointsOnOverview.AutoSize = true;
@@ -1300,6 +1319,7 @@ namespace EVEMon.SettingsUI
             // 
             this.networkPage.Controls.Add(this.esiSettingsGroupBox);
             this.networkPage.Controls.Add(this.ProxyServerGroupBox);
+            this.networkPage.Controls.Add(this.esiApiMethodPermissionsGroupBox);
             this.networkPage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.networkPage.Location = new System.Drawing.Point(5, 5);
             this.networkPage.Name = "networkPage";
@@ -1315,7 +1335,7 @@ namespace EVEMon.SettingsUI
             this.esiSettingsGroupBox.Controls.Add(this.esiSettingsLabel);
             this.esiSettingsGroupBox.Controls.Add(this.clientSecretTextBox);
             this.esiSettingsGroupBox.Controls.Add(this.clientIDTextBox);
-            this.esiSettingsGroupBox.Location = new System.Drawing.Point(3, 194);
+            this.esiSettingsGroupBox.Location = new System.Drawing.Point(3, 156);
             this.esiSettingsGroupBox.Name = "esiSettingsGroupBox";
             this.esiSettingsGroupBox.Size = new System.Drawing.Size(409, 88);
             this.esiSettingsGroupBox.TabIndex = 1;
@@ -1373,9 +1393,9 @@ namespace EVEMon.SettingsUI
             this.ProxyServerGroupBox.Controls.Add(this.customProxyCheckBox);
             this.ProxyServerGroupBox.Controls.Add(this.lblNetworkPageProxy);
             this.ProxyServerGroupBox.Controls.Add(this.customProxyPanel);
-            this.ProxyServerGroupBox.Location = new System.Drawing.Point(3, 31);
+            this.ProxyServerGroupBox.Location = new System.Drawing.Point(3, 15);
             this.ProxyServerGroupBox.Name = "ProxyServerGroupBox";
-            this.ProxyServerGroupBox.Size = new System.Drawing.Size(409, 157);
+            this.ProxyServerGroupBox.Size = new System.Drawing.Size(409, 135);
             this.ProxyServerGroupBox.TabIndex = 0;
             this.ProxyServerGroupBox.TabStop = false;
             this.ProxyServerGroupBox.Text = "Proxy Server Settings";
@@ -1383,7 +1403,7 @@ namespace EVEMon.SettingsUI
             // customProxyCheckBox
             // 
             this.customProxyCheckBox.AutoSize = true;
-            this.customProxyCheckBox.Location = new System.Drawing.Point(9, 74);
+            this.customProxyCheckBox.Location = new System.Drawing.Point(9, 53);
             this.customProxyCheckBox.Name = "customProxyCheckBox";
             this.customProxyCheckBox.Size = new System.Drawing.Size(119, 17);
             this.customProxyCheckBox.TabIndex = 9;
@@ -1401,7 +1421,7 @@ namespace EVEMon.SettingsUI
             this.customProxyPanel.Controls.Add(this.lblProxyPort);
             this.customProxyPanel.Controls.Add(this.lblHTTP);
             this.customProxyPanel.Controls.Add(this.proxyHttpHostTextBox);
-            this.customProxyPanel.Location = new System.Drawing.Point(17, 97);
+            this.customProxyPanel.Location = new System.Drawing.Point(17, 76);
             this.customProxyPanel.Name = "customProxyPanel";
             this.customProxyPanel.Size = new System.Drawing.Size(386, 54);
             this.customProxyPanel.TabIndex = 6;
@@ -1437,6 +1457,69 @@ namespace EVEMon.SettingsUI
             this.proxyHttpHostTextBox.Name = "proxyHttpHostTextBox";
             this.proxyHttpHostTextBox.Size = new System.Drawing.Size(182, 20);
             this.proxyHttpHostTextBox.TabIndex = 1;
+            // 
+            // esiApiMethodPermissionsGroupBox
+            // 
+            this.esiApiMethodPermissionsGroupBox.AutoSize = true;
+            this.esiApiMethodPermissionsGroupBox.Controls.Add(this.esiApiPermissionsLabel);
+            this.esiApiMethodPermissionsGroupBox.Controls.Add(this.basicMethodsRadioButton);
+            this.esiApiMethodPermissionsGroupBox.Controls.Add(this.basicMethodsLabel);
+            this.esiApiMethodPermissionsGroupBox.Controls.Add(this.advancedMethodsRadioButton);
+            this.esiApiMethodPermissionsGroupBox.Controls.Add(this.advancedMethodsLabel);
+            this.esiApiMethodPermissionsGroupBox.Location = new System.Drawing.Point(3, 252);
+            this.esiApiMethodPermissionsGroupBox.Name = "esiApiMethodPermissionsGroupBox";
+            this.esiApiMethodPermissionsGroupBox.Size = new System.Drawing.Size(409, 170);
+            this.esiApiMethodPermissionsGroupBox.TabIndex = 3;
+            this.esiApiMethodPermissionsGroupBox.TabStop = false;
+            this.esiApiMethodPermissionsGroupBox.Text = "Permitted ESI API Methods";
+            // 
+            // esiApiPermissionsLabel
+            // 
+            this.esiApiPermissionsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.esiApiPermissionsLabel.ForeColor = System.Drawing.SystemColors.MenuHighlight;
+            this.esiApiPermissionsLabel.Location = new System.Drawing.Point(9, 16);
+            this.esiApiPermissionsLabel.Name = "esiApiPermissionsLabel";
+            this.esiApiPermissionsLabel.Size = new System.Drawing.Size(309, 23);
+            this.esiApiPermissionsLabel.TabIndex = 0;
+            this.esiApiPermissionsLabel.Text = "Select your permissions:";
+            // 
+            // basicMethodsRadioButton
+            // 
+            this.basicMethodsRadioButton.Location = new System.Drawing.Point(9, 39);
+            this.basicMethodsRadioButton.Name = "basicMethodsRadioButton";
+            this.basicMethodsRadioButton.Size = new System.Drawing.Size(104, 24);
+            this.basicMethodsRadioButton.TabIndex = 1;
+            this.basicMethodsRadioButton.TabStop = true;
+            this.basicMethodsRadioButton.Text = "Basic";
+            this.basicMethodsRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // basicMethodsLabel
+            // 
+            this.basicMethodsLabel.Location = new System.Drawing.Point(25, 63);
+            this.basicMethodsLabel.Name = "basicMethodsLabel";
+            this.basicMethodsLabel.Size = new System.Drawing.Size(375, 21);
+            this.basicMethodsLabel.TabIndex = 2;
+            this.basicMethodsLabel.Text = "For character monitoring, skill level planning, and skill queue monitoring.";
+            this.basicMethodsLabel.Click += new System.EventHandler(this.basicMethodsLabel_Click);
+            // 
+            // advancedMethodsRadioButton
+            // 
+            this.advancedMethodsRadioButton.Location = new System.Drawing.Point(9, 87);
+            this.advancedMethodsRadioButton.Name = "advancedMethodsRadioButton";
+            this.advancedMethodsRadioButton.Size = new System.Drawing.Size(104, 24);
+            this.advancedMethodsRadioButton.TabIndex = 2;
+            this.advancedMethodsRadioButton.TabStop = true;
+            this.advancedMethodsRadioButton.Text = "Advanced";
+            this.advancedMethodsRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // advancedMethodsLabel
+            // 
+            this.advancedMethodsLabel.Location = new System.Drawing.Point(25, 114);
+            this.advancedMethodsLabel.Name = "advancedMethodsLabel";
+            this.advancedMethodsLabel.Size = new System.Drawing.Size(372, 40);
+            this.advancedMethodsLabel.TabIndex = 3;
+            this.advancedMethodsLabel.Text = resources.GetString("advancedMethodsLabel.Text");
             // 
             // emailNotificationsPage
             // 
@@ -2286,19 +2369,6 @@ namespace EVEMon.SettingsUI
             this.settingsFileStorageControl.Size = new System.Drawing.Size(416, 108);
             this.settingsFileStorageControl.TabIndex = 0;
             // 
-            // extraInfoComboBox
-            // 
-            this.extraInfoComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.extraInfoComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.extraInfoComboBox.Items.AddRange(new object[] {
-            "No Extra Info",
-            "Show Location",
-            "Show Jobs"});
-            this.extraInfoComboBox.Location = new System.Drawing.Point(274, 18);
-            this.extraInfoComboBox.Name = "extraInfoComboBox";
-            this.extraInfoComboBox.Size = new System.Drawing.Size(116, 21);
-            this.extraInfoComboBox.TabIndex = 36;
-            // 
             // SettingsForm
             // 
             this.AcceptButton = this.okButton;
@@ -2342,12 +2412,14 @@ namespace EVEMon.SettingsUI
             this.skillPlannerPage.ResumeLayout(false);
             this.skillPlannerPage.PerformLayout();
             this.networkPage.ResumeLayout(false);
+            this.networkPage.PerformLayout();
             this.esiSettingsGroupBox.ResumeLayout(false);
             this.esiSettingsGroupBox.PerformLayout();
             this.ProxyServerGroupBox.ResumeLayout(false);
             this.ProxyServerGroupBox.PerformLayout();
             this.customProxyPanel.ResumeLayout(false);
             this.customProxyPanel.PerformLayout();
+            this.esiApiMethodPermissionsGroupBox.ResumeLayout(false);
             this.emailNotificationsPage.ResumeLayout(false);
             this.emailNotificationsPage.PerformLayout();
             this.notificationsPage.ResumeLayout(false);
@@ -2565,5 +2637,11 @@ namespace EVEMon.SettingsUI
         private System.Windows.Forms.Label lblClientID;
         private System.Windows.Forms.TextBox clientSecretTextBox;
         private System.Windows.Forms.ComboBox extraInfoComboBox;
+        private System.Windows.Forms.GroupBox esiApiMethodPermissionsGroupBox;
+        private System.Windows.Forms.Label esiApiPermissionsLabel;
+        private System.Windows.Forms.Label basicMethodsLabel;
+        private System.Windows.Forms.Label advancedMethodsLabel;
+        private System.Windows.Forms.RadioButton basicMethodsRadioButton;
+        private System.Windows.Forms.RadioButton advancedMethodsRadioButton;
     }
 }

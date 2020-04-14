@@ -230,7 +230,7 @@ namespace EVEMon.ApiCredentialsManagement
                 if (m_updateMode)
                     m_esiKey.TryUpdateAsync(response, OnUpdated);
                 else
-                    ESIKey.TryAddOrUpdateAsync(newID, response, OnUpdated);
+                    ESIKey.TryAddOrUpdateAsync(newID, (ulong)Settings.APIMethodAccess, response, OnUpdated);
             }
         }
 

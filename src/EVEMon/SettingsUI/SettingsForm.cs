@@ -3,6 +3,7 @@ using EVEMon.Common.CloudStorageServices;
 using EVEMon.Common.Constants;
 using EVEMon.Common.Controls;
 using EVEMon.Common.Controls.MultiPanel;
+using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Enumerations.UISettings;
 using EVEMon.Common.Extensions;
 using EVEMon.Common.Factories;
@@ -51,8 +52,14 @@ namespace EVEMon.SettingsUI
             alwaysAskRadioButton.Font = FontFactory.GetFont("Tahoma", 8.25F, FontStyle.Bold);
             removeAllRadioButton.Font = FontFactory.GetFont("Tahoma", 8.25F, FontStyle.Bold);
             removeConfirmedRadioButton.Font = FontFactory.GetFont("Tahoma", 8.25F, FontStyle.Bold);
+            basicMethodsRadioButton.Font = FontFactory.GetFont("Tahoma", 8.25F, FontStyle.Bold);
+            advancedMethodsRadioButton.Font = FontFactory.GetFont("Tahoma", 8.25F, FontStyle.Bold);
             settingsFileStorageControl.Font = FontFactory.GetFont("Tahoma", 8.25F);
             extraInfoComboBox.SelectedIndex = 0;
+
+            ToolTip scopesTooltip = new ToolTip();
+            scopesTooltip.SetToolTip(basicMethodsRadioButton, NetworkConstants.SSOScopesBasic);
+            scopesTooltip.SetToolTip(advancedMethodsRadioButton, NetworkConstants.SSOScopes);
 
             m_settings = Settings.Export();
             m_oldSettings = Settings.Export();
@@ -190,6 +197,10 @@ namespace EVEMon.SettingsUI
             // Client ID / Secret
             clientIDTextBox.Text = m_settings.SSOClientID;
             clientSecretTextBox.Text = m_settings.SSOClientSecret;
+
+            // API Method Access
+            basicMethodsRadioButton.Checked = m_settings.APIMethodAccess == CCPAPIMethodsEnum.BasicCharacterFeatures;
+            advancedMethodsRadioButton.Checked = !basicMethodsRadioButton.Checked;
 
             // Updates
             cbCheckTime.Checked = m_settings.Updates.CheckTimeOnStartup;
@@ -555,6 +566,9 @@ namespace EVEMon.SettingsUI
             // Client ID / Secret
             m_settings.SSOClientID = (clientIDTextBox.Text ?? string.Empty).Trim();
             m_settings.SSOClientSecret = (clientSecretTextBox.Text ?? string.Empty).Trim();
+
+            // API method access
+            m_settings.APIMethodAccess = basicMethodsRadioButton.Checked ? CCPAPIMethodsEnum.BasicCharacterFeatures : CCPAPIMethodsEnum.AllCharacterFeatures;
 
             // Updates
             m_settings.Updates.CheckEVEMonVersion = cbCheckForUpdates.Checked;
@@ -1041,5 +1055,10 @@ namespace EVEMon.SettingsUI
         }
 
         #endregion
+
+        private void basicMethodsLabel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
