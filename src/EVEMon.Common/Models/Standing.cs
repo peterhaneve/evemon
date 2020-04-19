@@ -142,27 +142,15 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the entity image.
         /// </summary>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
-        private async Task GetImageAsync(bool useFallbackUri = false)
+        private async Task GetImageAsync()
         {
-            while (true)
+            Image img = await ImageService.GetImageAsync(GetImageUrl()).ConfigureAwait(false);
+            if (img != null)
             {
-                Image img = await ImageService.GetImageAsync(GetImageUrl(useFallbackUri)).ConfigureAwait(false);
-
-                if (img == null)
-                {
-                    if (useFallbackUri)
-                        return;
-
-                    useFallbackUri = true;
-                    continue;
-                }
-
                 m_image = img;
 
                 // Notify the subscriber that we got the image
                 StandingImageUpdated?.ThreadSafeInvoke(this, EventArgs.Empty);
-                break;
             }
         }
 
@@ -187,15 +175,23 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the image URL.
         /// </summary>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
-        /// <returns></returns>
-        private Uri GetImageUrl(bool useFallbackUri)
+        private Uri GetImageUrl()
         {
-            return Group == StandingGroup.Agents
-                ? ImageHelper.GetPortraitUrl(useFallbackUri, m_entityID)
-                : ImageHelper.GetImageUrl(useFallbackUri,
-                Group == StandingGroup.Factions ? "alliance" : "corporation",
-                m_entityID);
+            Uri uri;
+            switch (Group)
+            {
+            case StandingGroup.NPCCorporations:
+                uri = ImageHelper.GetCorporationImageURL(m_entityID);
+                break;
+            case StandingGroup.Factions:
+                uri = ImageHelper.GetAllianceImageURL(m_entityID);
+                break;
+            case StandingGroup.Agents:
+            default:
+                uri = ImageHelper.GetPortraitUrl(m_entityID);
+                break;
+            }
+            return uri;
         }
 
         #endregion

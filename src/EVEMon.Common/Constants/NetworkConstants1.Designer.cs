@@ -106,6 +106,15 @@ namespace EVEMon.Common.Constants {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to /alliances/{0:D}/logo?tenant=tranquility&amp;size={1:D}.
+        /// </summary>
+        public static string CCPAllianceLogo {
+            get {
+                return ResourceManager.GetString("CCPAllianceLogo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://peterhaneve.github.io/evemon-esi.
         /// </summary>
         public static string CCPApplicationRegistration {
@@ -115,20 +124,38 @@ namespace EVEMon.Common.Constants {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /{0}/{1}_{2}.png.
+        ///   Looks up a localized string similar to /corporations/{0:D}/logo?tenant=tranquility&amp;size={1:D}.
         /// </summary>
-        public static string CCPIconsFromImageServer {
+        public static string CCPCorporationLogo {
             get {
-                return ResourceManager.GetString("CCPIconsFromImageServer", resourceCulture);
+                return ResourceManager.GetString("CCPCorporationLogo", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /character/{0}_{1}.jpg.
+        ///   Looks up a localized string similar to /characters/{0:D}/portrait?tenant=tranquility&amp;size={1:D}.
         /// </summary>
         public static string CCPPortraits {
             get {
                 return ResourceManager.GetString("CCPPortraits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /types/{0:D}/icon?tenant=tranquility&amp;size={1:D}.
+        /// </summary>
+        public static string CCPTypeImage {
+            get {
+                return ResourceManager.GetString("CCPTypeImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /types/{0:D}/render?tenant=tranquility&amp;size={1:D}.
+        /// </summary>
+        public static string CCPTypeRender {
+            get {
+                return ResourceManager.GetString("CCPTypeRender", resourceCulture);
             }
         }
         
@@ -934,20 +961,11 @@ namespace EVEMon.Common.Constants {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://image.eveonline.com.
+        ///   Looks up a localized string similar to https://images.evetech.net.
         /// </summary>
         public static string EVEImageServerBase {
             get {
                 return ResourceManager.GetString("EVEImageServerBase", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://imageserver.eveonline.com.
-        /// </summary>
-        public static string EVEImageServerCDN {
-            get {
-                return ResourceManager.GetString("EVEImageServerCDN", resourceCulture);
             }
         }
         

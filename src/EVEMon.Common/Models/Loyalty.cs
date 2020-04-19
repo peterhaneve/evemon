@@ -88,27 +88,13 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the corporation image.
         /// </summary>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
-        private async Task GetImageAsync(bool useFallbackUri = false)
+        private async Task GetImageAsync()
         {
-            while (true)
-            {
-                Uri uri = ImageHelper.GetImageUrl(useFallbackUri, "corporation", CorpId);
-                Image img = await ImageService.GetImageAsync(uri).ConfigureAwait(false);
-
-                if (img == null)
-                {
-                    if (useFallbackUri)
-                        return;
-
-                    useFallbackUri = true;
-                    continue;
-                }
-
+            Uri uri = ImageHelper.GetCorporationImageURL(CorpId);
+            Image img = await ImageService.GetImageAsync(uri).ConfigureAwait(false);
+            if (img != null) {
                 m_image = img;
-
                 LoyaltyCorpImageUpdated?.ThreadSafeInvoke(this, EventArgs.Empty);
-                break;
             }
         }
 

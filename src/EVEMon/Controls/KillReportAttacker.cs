@@ -91,42 +91,29 @@ namespace EVEMon.Controls
         /// Gets the image for the specified picture box.
         /// </summary>
         /// <param name="pictureBox">The picture box.</param>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
-        private async Task GetImageForAsync(PictureBox pictureBox, bool useFallbackUri = false)
+        private async Task GetImageForAsync(PictureBox pictureBox)
         {
-            while (true)
-            {
-                Image img = await ImageService.GetImageAsync(GetImageUrl(pictureBox, useFallbackUri));
-
-                if (img == null && !useFallbackUri)
-                {
-                    useFallbackUri = true;
-                    continue;
-                }
-
+            Image img = await ImageService.GetImageAsync(GetImageUrl(pictureBox));
+            if (img != null)
                 pictureBox.Image = img;
-                break;
-            }
         }
 
         /// <summary>
         /// Gets the image URL.
         /// </summary>
         /// <param name="pictureBox">The picture box.</param>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
         /// <returns></returns>
-        private Uri GetImageUrl(PictureBox pictureBox, bool useFallbackUri)
+        private Uri GetImageUrl(PictureBox pictureBox)
         {
             if (pictureBox == CharacterPictureBox)
             {
-                return ImageHelper.GetPortraitUrl(useFallbackUri, m_attacker.ID, (int)EveImageSize.x64);
+                return ImageHelper.GetPortraitUrl(m_attacker.ID, (int)EveImageSize.x64);
             }
 
-            int typeId = pictureBox.Equals(ShipPictureBox)
-                ? m_attacker.ShipTypeID
-                : m_attacker.WeaponTypeID;
+            int typeId = pictureBox.Equals(ShipPictureBox) ? m_attacker.ShipTypeID :
+                m_attacker.WeaponTypeID;
 
-            return ImageHelper.GetImageUrl(useFallbackUri, "type", typeId);
+            return ImageHelper.GetTypeImageURL(typeId);
         }
 
         #endregion

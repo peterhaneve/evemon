@@ -1,37 +1,14 @@
 ﻿<?xml version="1.0"?>
 <evemon xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <newest>
-    <date>02 February 2020</date>
-    <version>4.0.15.4962</version>
-    <md5>4668daf8c222c949f080c785bddcb319</md5>
-    <url>https://forums.eveonline.com/t/evemon-4-0-15-beta-under-new-ownership-conversion-for-esi/75953</url>
-    <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.15/EVEMon-install-4.0.15.exe</autopatchurl>
+    <date>14 April 2020</date>
+    <version>4.0.16.4965</version>
+    <md5>060f0ed5e13e67ee3039a0a86f4bcd7e</md5>
+    <url>https://forums.eveonline.com/t/evemon-4-0-16-beta-under-new-ownership-conversion-for-esi/75953</url>
+    <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.16/EVEMon-install-4.0.16.exe</autopatchurl>
     <autopatchargs>/S /AUTORUN /SKIPDOTNET</autopatchargs>
     <additionalargs>/D=%EVEMON_EXECUTABLE_PATH%</additionalargs>
-    <message><![CDATA[# Release v4.0.15
-
-## Bug Fixes
-- Reduce spurious errors from querying corporation endpoints where the character does not have roles
-- Character LP list is now sorted descending by name
-- Notifications can now be closed by right clicking
-- Market order completed or expired notifications now appear again
-
-## Contributors
-- Peter Han
-- hollo6
-- corsair75
-- wvdvegt]]></message>
-  </newest>
-  <releases>
-    <release>
-      <date>14 April 2020</date>
-      <version>4.0.16.4965</version>
-      <md5>060f0ed5e13e67ee3039a0a86f4bcd7e</md5>
-      <url>https://forums.eveonline.com/t/evemon-4-0-16-beta-under-new-ownership-conversion-for-esi/75953</url>
-      <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.16/EVEMon-install-4.0.16.exe</autopatchurl>
-      <autopatchargs>/S /AUTORUN /SKIPDOTNET</autopatchargs>
-      <additionalargs>/D=%EVEMON_EXECUTABLE_PATH%</additionalargs>
-      <message><![CDATA[# Release v4.0.16
+    <message><![CDATA[# Release v4.0.16
 
 ## Bug Fixes
 - Assets ESI endpoint updated
@@ -45,71 +22,92 @@
 - poundjd
 - Wodin73
 - hollo6]]></message>
+  </newest>
+  <releases>
+    <release>
+      <date>18 April 2020</date>
+      <version>4.0.17.4966</version>
+      <md5>92267627c6318a49c3d0bda1f5b1418f</md5>
+      <url>https://forums.eveonline.com/t/evemon-4-0-17-beta-under-new-ownership-conversion-for-esi/75953</url>
+      <autopatchurl>https://github.com/peterhaneve/evemon/releases/download/4.0.17/EVEMon-install-4.0.17.exe</autopatchurl>
+      <autopatchargs>/S /AUTORUN /SKIPDOTNET</autopatchargs>
+      <additionalargs>/D=%EVEMON_EXECUTABLE_PATH%</additionalargs>
+      <message><![CDATA[# Release v4.0.17
+
+## Bug Fixes
+- Fully rewrite image handler to fix missing images and invalid character identities in multiple locations
+- Replace corrupted SDE files from CCP with last known good version which resolves a variety of missing data issues
+
+## Contributors
+- Peter Han
+- wvdvegt
+- hollo6
+- landrace]]></message>
     </release>
   </releases>
   <datafiles>
     <datafile>
       <name>eve-blueprints-en-US.xml.gzip</name>
-      <date>14 April 2020</date>
+      <date>18 April 2020</date>
       <md5>21cc8962245f516b92ea59c05e0e8818</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) blueprints data file by the EVEMon Development Team
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) blueprints data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
     <datafile>
       <name>eve-certificates-en-US.xml.gzip</name>
       <date>05 June 2018</date>
       <md5>540000f7c111354769a54fa31e57d411</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) certificates data file by the EVEMon Development Team
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) certificates data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
     <datafile>
       <name>eve-geography-en-US.xml.gzip</name>
-      <date>14 April 2020</date>
-      <md5>371b2da08fe6b5612acde5d4ba155380</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) geography data file by the EVEMon Development Team
+      <date>18 April 2020</date>
+      <md5>bd6283bee820dd226df3af61d93215cc</md5>
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) geography data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
     <datafile>
       <name>eve-items-en-US.xml.gzip</name>
-      <date>14 April 2020</date>
-      <md5>0a5716a97be7cf852132891170664b17</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) items data file by the EVEMon Development Team
+      <date>18 April 2020</date>
+      <md5>83184e2f78f7baf82dff33a1c8828d82</md5>
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) items data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
     <datafile>
       <name>eve-masteries-en-US.xml.gzip</name>
       <date>05 June 2018</date>
       <md5>3668b50996fc40a0c0853fec427b5712</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) masteries data file by the EVEMon Development Team
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) masteries data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
     <datafile>
       <name>eve-properties-en-US.xml.gzip</name>
-      <date>14 April 2020</date>
+      <date>18 April 2020</date>
       <md5>2bb5ea3e65c6d7856617873f927f82ef</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) properties data file by the EVEMon Development Team
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) properties data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
     <datafile>
       <name>eve-reprocessing-en-US.xml.gzip</name>
-      <date>14 April 2020</date>
-      <md5>a44148c3b6231653e235fdf62ddeb4df</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) reprocessing data file by the EVEMon Development Team
+      <date>18 April 2020</date>
+      <md5>1c17d818813b2a7ae3eaafe16de28f67</md5>
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) reprocessing data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
     <datafile>
       <name>eve-skills-en-US.xml.gzip</name>
-      <date>14 April 2020</date>
+      <date>18 April 2020</date>
       <md5>ce4ed98174a6bd48e22adb6d82ab6ed7</md5>
-      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1704507</url>
-      <message><![CDATA[Invasion 1.6 (1704507) skills data file by the EVEMon Development Team
+      <url>https://peterhaneve.github.io/evemon-datafiles/Invasion/1707510</url>
+      <message><![CDATA[Invasion 1.7 (1707510) skills data file by the EVEMon Development Team
 NOT COMPATIBLE with EVEMon prior to version 2.2.0]]></message>
     </datafile>
   </datafiles>

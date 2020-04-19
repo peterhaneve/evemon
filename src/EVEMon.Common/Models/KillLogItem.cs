@@ -240,28 +240,14 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the item image.
         /// </summary>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
-        private async Task GetItemImageAsync(bool useFallbackUri = false)
+        private async Task GetItemImageAsync()
         {
-            while (true)
-            {
-                Uri uri = ImageHelper.GetImageUrl(useFallbackUri, "type", m_typeID);
-                Image img = await ImageService.GetImageAsync(uri).ConfigureAwait(false);
-
-                if (img == null)
-                {
-                    if (useFallbackUri)
-                        return;
-
-                    useFallbackUri = true;
-                    continue;
-                }
-
+            Uri uri = ImageHelper.GetTypeImageURL(m_typeID);
+            Image img = await ImageService.GetImageAsync(uri).ConfigureAwait(false);
+            if (img != null) {
                 m_image = img;
-
                 // Notify the subscriber that we got the image
                 KillLogItemImageUpdated?.ThreadSafeInvoke(this, EventArgs.Empty);
-                break;
             }
         }
 

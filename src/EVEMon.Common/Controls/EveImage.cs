@@ -258,18 +258,11 @@ namespace EVEMon.Common.Controls
         /// <summary>
         /// Gets the image from CCP's image server.
         /// </summary>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
-        private async Task GetImageFromCCPAsync(bool useFallbackUri = false)
+        private async Task GetImageFromCCPAsync()
         {
             while (true)
             {
-                Image img = await ImageService.GetImageAsync(GetImageUrl(useFallbackUri)).ConfigureAwait(false);
-                if (img == null && !useFallbackUri)
-                {
-                    useFallbackUri = true;
-                    continue;
-                }
-
+                Image img = await ImageService.GetImageAsync(GetImageUrl()).ConfigureAwait(false);
                 GotImage(m_item.ID, img);
                 break;
             }
@@ -278,18 +271,14 @@ namespace EVEMon.Common.Controls
         /// <summary>
         /// Gets the image URL.
         /// </summary>
-        /// <param name="useFallbackUri">if set to <c>true</c> [use fallback URI].</param>
         /// <returns></returns>
-        private Uri GetImageUrl(bool useFallbackUri)
+        private Uri GetImageUrl()
         {
-            string path = string.Format(CultureConstants.InvariantCulture,
-                NetworkConstants.CCPIconsFromImageServer,
-                (int)m_imageSize > 64 ? "render" : "type",
-                m_item.ID, (int)m_imageSize);
-
-            return useFallbackUri
-                ? ImageService.GetImageServerBaseUri(path)
-                : ImageService.GetImageServerCdnUri(path);
+            int size = (int)m_imageSize;
+            string path = string.Format(CultureConstants.InvariantCulture, (size > 64 ?
+                NetworkConstants.CCPTypeRender : NetworkConstants.CCPTypeImage), m_item.ID,
+                size);
+            return ImageService.GetImageServerBaseUri(path);
         }
 
         /// <summary>

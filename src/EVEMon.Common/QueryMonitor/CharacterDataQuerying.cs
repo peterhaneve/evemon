@@ -33,6 +33,8 @@ namespace EVEMon.Common.QueryMonitor
         // Result from the character skill queue to handle a pathological case where skill
         // queues were not-modified but need to be re-imported due to a skills list change
         private EsiAPISkillQueue m_lastQueue;
+        // Responses from the market order history results since we handle it manually
+        private ResponseParams m_orderHistoryResponse;
 
         #endregion
 
@@ -49,6 +51,7 @@ namespace EVEMon.Common.QueryMonitor
             m_ccpCharacter = ccpCharacter;
             m_characterQueryMonitors = new List<IQueryMonitorEx>();
             m_attrResponse = null;
+            m_orderHistoryResponse = null;
             m_lastQueue = null;
 
             // Add the monitors in an order as they will appear in the throbber menu
@@ -525,6 +528,14 @@ namespace EVEMon.Common.QueryMonitor
             {
                 var endedOrders = new LinkedList<MarketOrder>();
                 var allOrders = new EsiAPIMarketOrders();
+                m_orderHistoryResponse = result.Response;
+                // Ignore the If-Modified-Since and cache timer on order history to ensure
+                // that old orders are not wiped out
+                if (m_orderHistoryResponse != null)
+                {
+                    m_orderHistoryResponse.Expires = null;
+                    m_orderHistoryResponse.ETag = null;
+                }
                 // Add normal orders first
                 if (orders != null)
                     allOrders.AddRange(orders);
@@ -558,7 +569,7 @@ namespace EVEMon.Common.QueryMonitor
                 if (esiKey != null && !EsiErrors.IsErrorCountExceeded)
                     EveMonClient.APIProviders.CurrentProvider.QueryEsi<EsiAPIMarketOrders>(
                         ESIAPICharacterMethods.MarketOrdersHistory, OnMarketOrdersCompleted,
-                        new ESIParams(m_attrResponse, esiKey.AccessToken)
+                        new ESIParams(m_orderHistoryResponse, esiKey.AccessToken)
                         {
                             ParamOne = target.CharacterID
                         }, result);

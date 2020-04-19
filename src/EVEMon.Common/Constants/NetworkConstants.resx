@@ -133,7 +133,7 @@
     <value>/updates/patch.xml</value>
   </data>
   <data name="CCPPortraits" xml:space="preserve">
-    <value>/character/{0}_{1}.jpg</value>
+    <value>/characters/{0:D}/portrait?tenant=tranquility&amp;size={1:D}</value>
     <comment>New web address for portraits as part of Incursion 1.1.0</comment>
   </data>
   <data name="EVEMonMainPage" xml:space="preserve">
@@ -193,9 +193,9 @@
     <value>/v1/characters/{0:D}/standings/</value>
     <comment>3600</comment>
   </data>
-  <data name="CCPIconsFromImageServer" xml:space="preserve">
-    <value>/{0}/{1}_{2}.png</value>
-    <comment>Icons from CCP's image server</comment>
+  <data name="CCPCorporationLogo" xml:space="preserve">
+    <value>/corporations/{0:D}/logo?tenant=tranquility&amp;size={1:D}</value>
+    <comment>New web address for characters and alliances as part of Incursion 1.1.0</comment>
   </data>
   <data name="EVEGateMailOpen" xml:space="preserve">
     <value>/Mail/ReadMessage/{0}</value>
@@ -391,7 +391,7 @@
     <value>https://community.eveonline.com</value>
   </data>
   <data name="EVEImageServerBase" xml:space="preserve">
-    <value>https://image.eveonline.com</value>
+    <value>https://images.evetech.net</value>
   </data>
   <data name="ESICharacterFatigue" xml:space="preserve">
     <value>/v1/characters/{0:D}/fatigue/</value>
@@ -412,9 +412,6 @@
   <data name="ESICorporationBlueprints" xml:space="preserve">
     <value>/v2/corporations/{0:D}/blueprints/</value>
     <comment>3600</comment>
-  </data>
-  <data name="EVEImageServerCDN" xml:space="preserve">
-    <value>https://imageserver.eveonline.com</value>
   </data>
   <data name="ExternalEveNotificationTextParser" xml:space="preserve">
     <value>/eve/ExternalEveNotificationTextParser.cs</value>
@@ -607,6 +604,15 @@
   <data name="ESIMarketOrdersHistory" xml:space="preserve">
     <value>/v1/characters/{0:D}/orders/history</value>
     <comment>1200</comment>
+  </data>
+  <data name="CCPAllianceLogo" xml:space="preserve">
+    <value>/alliances/{0:D}/logo?tenant=tranquility&amp;size={1:D}</value>
+  </data>
+  <data name="CCPTypeImage" xml:space="preserve">
+    <value>/types/{0:D}/icon?tenant=tranquility&amp;size={1:D}</value>
+  </data>
+  <data name="CCPTypeRender" xml:space="preserve">
+    <value>/types/{0:D}/render?tenant=tranquility&amp;size={1:D}</value>
   </data>
   <data name="SSOScopesBasic" xml:space="preserve">
     <value>esi-wallet.read_character_wallet.v1 esi-location.read_location.v1 esi-location.read_ship_type.v1 esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1 esi-clones.read_clones.v1 esi-clones.read_implants.v1</value>

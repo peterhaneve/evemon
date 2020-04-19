@@ -10,20 +10,11 @@ using EVEMon.Common.Constants;
 using EVEMon.Common.Enumerations;
 using EVEMon.Common.Helpers;
 using EVEMon.Common.Net;
-using System.Collections.Generic;
 
 namespace EVEMon.Common.Service
 {
     public static class ImageService
     {
-        /// <summary>
-        /// Gets the image server CDN URI.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns></returns>
-        public static Uri GetImageServerCdnUri(string path) => new Uri(
-            NetworkConstants.EVEImageServerCDN + path);
-
         /// <summary>
         /// Gets the image server base URI.
         /// </summary>
@@ -41,8 +32,7 @@ namespace EVEMon.Common.Service
             string path = string.Format(CultureConstants.InvariantCulture,
                 NetworkConstants.CCPPortraits, charId, (int)EveImageSize.x128);
 
-            return await GetImageAsync(GetImageServerCdnUri(path), false).ConfigureAwait(false) ??
-                await GetImageAsync(GetImageServerBaseUri(path), false).ConfigureAwait(false);
+            return await GetImageAsync(GetImageServerBaseUri(path), false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -53,7 +43,7 @@ namespace EVEMon.Common.Service
         public static Task GetAllianceImageAsync(PictureBox pictureBox, long allianceID)
         {
             string path = string.Format(CultureConstants.InvariantCulture, NetworkConstants.
-                CCPIconsFromImageServer, "alliance", allianceID, pictureBox.Width);
+                CCPAllianceLogo, allianceID, pictureBox.Width);
             return GetImageAsync(pictureBox, path);
         }
 
@@ -65,7 +55,7 @@ namespace EVEMon.Common.Service
         public static Task GetCorporationImageAsync(PictureBox pictureBox, long corporationID)
         {
             string path = string.Format(CultureConstants.InvariantCulture, NetworkConstants.
-                CCPIconsFromImageServer, "corporation", corporationID, pictureBox.Width);
+                CCPCorporationLogo, corporationID, pictureBox.Width);
             return GetImageAsync(pictureBox, path);
         }
 
@@ -76,8 +66,7 @@ namespace EVEMon.Common.Service
         /// <param name="path">The path.</param>
         private static async Task GetImageAsync(PictureBox pictureBox, string path)
         {
-            Image image = await GetImageAsync(GetImageServerCdnUri(path)).ConfigureAwait(false) ??
-                await GetImageAsync(GetImageServerBaseUri(path)).ConfigureAwait(false);
+            Image image = await GetImageAsync(GetImageServerBaseUri(path)).ConfigureAwait(false);
             pictureBox.Image = image ?? pictureBox.InitialImage;
             pictureBox.Update();
         }
@@ -215,18 +204,12 @@ namespace EVEMon.Common.Service
         /// <summary>
         /// From a given url, computes a cache file name.
         /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
         private static string GetCacheName(Uri url)
         {
-            Match extensionMatch = Regex.Match(url.AbsoluteUri, @"([^\.]+)$");
-            string ext = string.Empty;
-            if (extensionMatch.Success)
-                ext = "." + extensionMatch.Groups[1];
-
             Stream stream = Util.GetMemoryStream(Encoding.UTF8.GetBytes(url.AbsoluteUri));
             string md5Sum = Util.CreateMD5(stream);
-            return string.Concat(md5Sum, ext);
+            // Extensions are no longer part of the requested URLs
+            return string.Concat(md5Sum, ".png");
         }
     }
 }
