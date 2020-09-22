@@ -267,7 +267,7 @@ namespace EVEMon.XmlGenerator.Datafiles
             {20315, 3}, // Warhead Upgrades
             {3437, 4}, // Drone Avionics
             {23618, 4}, // Drone Durability
-            {3442, 4}, // Drone Interfacing
+            {3442, 3}, // Drone Interfacing
             {12305, 4}, // Drone Navigation
             {23606, 4}, // drone Sharpshooting
             {3436, 5}, // Drones
