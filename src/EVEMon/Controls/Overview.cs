@@ -11,6 +11,8 @@ using EVEMon.Common.Enumerations.UISettings;
 using EVEMon.Common.Extensions;
 using EVEMon.Common.Factories;
 using EVEMon.Common.Models;
+using EVEMon.Common.Notifications;
+using EVEMon.Common.SettingsObjects;
 
 namespace EVEMon.Controls
 {
@@ -163,6 +165,17 @@ namespace EVEMon.Controls
                     overviewItems.Insert(index, overviewItem);
                 }
 
+                Int32 badgeCount = EveMonClient.Notifications.Where(p => character.Equals(p.SenderCharacter) && p.Category != NotificationCategory.MarketOrdersEnding).Distinct().Count();
+
+                System.Diagnostics.Debug.WriteLine($"{character.Name} - {badgeCount}");
+                Label badge = (Label)overviewItems[index].Controls.Find("badge", true)[0];
+
+                badge.Visible = badgeCount != 0;
+                badge.Text = $"{badgeCount}";
+
+                MainWindowSettings mainWindowSettings = Settings.UI.MainWindow;
+                PortraitSizes portraitSize = mainWindowSettings.OverviewItemSize;
+                badge.Left = portraitSize.GetDefaultValue() - badge.Width + 3;
                 // Remove processed character from the dictionary and move forward
                 if (character != null)
                     items.Remove(character);
