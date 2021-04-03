@@ -58,7 +58,7 @@ namespace EVEMon.Common.Notifications
         /// </summary>
         private void UpdateDescription()
         {
-            Description = $"{PlanetaryPins.Count} planetary colon{(PlanetaryPins.Count == 1 ? "y" : "ies")} are idle.";
+            Description = $"{PlanetaryPins.Count} planetary colon{(PlanetaryPins.Count == 1 ? "y is" : "ies are")} idle.";
         }
     }
  }
